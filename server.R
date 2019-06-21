@@ -111,17 +111,17 @@ shinyServer(function(input, output, session) {
 # Profiles: SNI Table -----------------------------------------------------
     profile_data_react <- reactive({
         
-        time_series <- time_series[time_series$Region_Name == input$region_profile,]
+        basic <- basic[basic$Region_Name == input$region_profile,]
         
-        time_series <- time_series[time_series$Division_Name == input$division_profile,]
+        basic <- basic[basic$Division == input$division_profile,]
         
-        time_series <- time_series[time_series$District_Name == input$district_profile,]
+        basic <- basic[basic$District == input$district_profile,]
         
-        time_series <- time_series[time_series$School_Name == input$school_profile,]
+        basic <- basic[basic$School_Name_y == input$school_profile,]
         
         basic <- basic[profile_vars]
         
-        basic <- basic[basic$School_Name == as.character(input$school_profile),]
+        basic <- basic[basic$School_Name_y == as.character(input$school_profile),]
         
         basic <- setNames(basic, c(
             'School Name',
@@ -146,6 +146,15 @@ shinyServer(function(input, output, session) {
     })
     
     output$snitable_profile <- renderTable({
+        
+        
+        # validate(
+        #     
+        #     need(dim(), paste("Reports and data cannot be downloaded for", indicator_key(), sep = " "))
+        # 
+        #     )
+        
+        
         profile_data_react()
     })
     
