@@ -27,7 +27,16 @@ shinyServer(function(input, output, session) {
             ) %>%
             setView(lat = 12.8797, lng = 122.7740, zoom = 6) %>%
             addMarkers(
-                clusterOptions = markerClusterOptions()
+                clusterOptions = markerClusterOptions(), popup = ~paste("<b>School Name:</b>", time_series$School_Name, "<br/>",
+                                                                        "<b>School ID:</b>", time_series$School_ID, "<br/>",
+                                                                        "<b>School Neediness Score:</b>", time_series$shi_score, "<br/>",
+                                                                        "<b>Student Teacher Ratio:</b>", time_series$Student_Teacher_Ratio, "<br/>",
+                                                                        "<b>Student Classroom Ratio:</b>", time_series$Student_Classroom_Ratio, "<br/>",
+                                                                        "<b>Water Access:</b>", time_series$Original_Water_Boolean, "<br/>",
+                                                                        "<b>Internet Access:</b>", time_series$Original_Internet_Boolean, "<br/>",
+                                                                        "<b>Electricity Access:</b>", time_series$Original_Electricity_Boolean, "<br/>",
+                                                                        "<b>Remoteness Index:</b>", time_series$remoteness_index, "<br/>",
+                                                                        "<b>CCT Percentage:</b>", time_series$cct_percentage, "<br/>")
             )
     })
     
