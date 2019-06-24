@@ -1,10 +1,10 @@
 shinyServer(function(input, output, session) {
-
-
-# SNI Methodology Table ---------------------------------------------------
+    
+    
+    # SNI Methodology Table ---------------------------------------------------
     output$variables_table <- renderTable(methodology, colnames = TRUE, striped = TRUE, hover = TRUE, align = "c")
     
-# Time Series Map ---------------------------------------------------------
+    # Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
         time_series <- time_series[time_series$School_Year == input$year_map,]
         time_series <- filter(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
@@ -27,20 +27,20 @@ shinyServer(function(input, output, session) {
             ) %>%
             setView(lat = 12.8797, lng = 122.7740, zoom = 6) %>%
             addMarkers(
-                       clusterOptions = markerClusterOptions()
-                       )
+                clusterOptions = markerClusterOptions()
+            )
     })
     
-
-
-# Time Series Data Table --------------------------------------------------
-    output$timeseries_table <- DT::renderDataTable(DT::datatable(data = ts_clean, options = list(autoWidth = FALSE), filter = "top"))
-
-
-# School Profiles ---------------------------------------------------------
     
-
-# Update Select Inputs ----------------------------------------------------
+    
+    # Time Series Data Table --------------------------------------------------
+    output$timeseries_table <- DT::renderDataTable(DT::datatable(data = ts_clean, options = list(autoWidth = FALSE), filter = "top"))
+    
+    
+    # School Profiles ---------------------------------------------------------
+    
+    
+    # Update Select Inputs ----------------------------------------------------
     # observe({
     #     districts <- if (is.null(input$region_profile)) {
     #         character(0) } else {
@@ -88,7 +88,7 @@ shinyServer(function(input, output, session) {
         time_series <- time_series[time_series$Region_Name == input$region_profile,]
         
         time_series <- time_series[time_series$Division_Name == input$division_profile,]
-
+        
         updateSelectInput(session, "district_profile", choices = unique(time_series$District_Name))
         
     })
@@ -106,9 +106,9 @@ shinyServer(function(input, output, session) {
         updateSelectInput(session, "school_profile", choices = unique(time_series$School_Name))
         
     })
-
-
-# Profiles: SNI Table -----------------------------------------------------
+    
+    
+    # Profiles: SNI Table -----------------------------------------------------
     profile_data_react <- reactive({
         
         basic <- basic[basic$Region_Name == input$region_profile,]
@@ -138,7 +138,7 @@ shinyServer(function(input, output, session) {
             'Internet Access',
             'Electricity Access'
         ))
-
+        
         basic <- as.data.frame(t(basic))
         
         basic <- tibble::rownames_to_column(basic, "Variable")
@@ -159,106 +159,132 @@ shinyServer(function(input, output, session) {
     })
     
     
+    
+    
+    hist_data_react <- reactive({
+        basic <- basic[basic$Region_Name == input$region_profile,]
+        basic <- basic[basic$Division == input$division_profile,]
+        basic <- basic[basic$District == input$district_profile,]
+        basic <- basic[basic$School_Name_y == input$school_profile,]
+        basic <- basic[profile_vars]
 
-# Profiles: Histogram -----------------------------------------------------
+        
+        # profile_vars <- c(
+        #     'School_Name_y',
+        #     "School_ID",
+        #     "Region_Name",
+        #     "Division",
+        #     "District",
+        #     'shi_score',
+        #     'remoteness_index',
+        #     'cct_percentage',
+        #     'Student_Teacher_Ratio',
+        #     'Student_Classroom_Ratio',
+        #     'Water_Access',
+        #     'Internet_Access',
+        #     'Electricity_Access')
+        
+    })
+    
+    
+    
+    # Profiles: Histogram -----------------------------------------------------
     output$profile_hist <- renderPlot({
         
-        #hist_var <- input$profle_hist_var
+        mv <- time_series[time_series$Region_Name == input$region_profile,]
+        
+        mv <- mv[mv$Division_Name == input$division_profile,]
+        
+        mv <- mv[mv$District_Name == input$district_profile,]
+        
+        mv <- mv[mv$School_Name == input$school_profile,]
         
         if (input$profle_hist_var == 'shi_score') {
             hist_var = basic$shi_score
             xlim_var = c(0.001946283,1.501641408)
             breaks_var = 50
-            #lines_var1 = c(basic$shi_score, basic$shi_score)
-            #lines_var2 = c(0,500)
+            mv <- mv$shi_score
         }
         else if (input$profle_hist_var == 'cct_percentage') {
             hist_var = basic$cct_percentage
             xlim_var = c(0,100)
             breaks_var = 40
+            mv <- mv$cct_percentage
         }
         else if (input$profle_hist_var == 'remoteness_index') {
             hist_var = basic$remoteness_index
             xlim_var = c(-800,1000)
             breaks_var = 160
+            mv <- mv$remoteness_index
         }
         else if (input$profle_hist_var == 'Student_Teacher_Ratio') {
             hist_var = basic$Student_Teacher_Ratio
             xlim_var = c(0,250)
             breaks_var = 120
+            mv <- mv$Student_Teacher_Ratio
         }
         else if (input$profle_hist_var == 'Student_Classroom_Ratio') {
             hist_var = basic$Student_Classroom_Ratio
             xlim_var = c(0,250)
             breaks_var = 120
+            mv <- mv$Student_Classroom_Ratio
         }
         else if (input$profle_hist_var == 'Water_Access') {
             hist_var = basic$Original_Water_Boolean
             xlim_var = c(0,1)
             breaks_var = 2
+            mv <- mv$Original_Water_Boolean
         }
         else if (input$profle_hist_var == 'Electricity_Access') {
             hist_var = basic$Original_Electricity_Boolean
             xlim_var = c(0,1)
             breaks_var = 2
+            mv <- mv$Original_Electricity_Boolean
         }
         else if (input$profle_hist_var == 'Internet_Access') {
             hist_var = basic$Original_Internet_Boolean
             xlim_var = c(0,1)
             breaks_var = 2
+            mv <- mv$Original_Internet_Boolean
         }
         else {
             hist_var = basic$cct_percentage
             xlim_var = c(0,1000)
             breaks_var = 50
+            mv <- mv$cct_percentage
         }
-        
+
         hist(hist_var,
-             #probability = TRUE,
              xlim = xlim_var,
              breaks = breaks_var,
-             abline(v=mean(time_series), col = "red"),
-             col="blue",
-             xlab = "Remoteness",
-             main = "hayhayhayay"
-        )
-        #lines(c(200,200), c(0,2000), col = "red", lwd = 4)
-        #lines(lines_var1, lines_var2, col = "red", lwd = 4)
+             col="#1C307E",
+             xlab = input$profle_hist_var
+            )
+        #abline(v = mv, col="red", lwd = 5)
     })
     
     
-
-# Profiles: Gender Pie Chart ----------------------------------------------
+    
+    # Profiles: Gender Pie Chart ----------------------------------------------
     pie_react <- reactive({
-        #basic <- basic[basic$School_Name == as.character(input$school_profile),]
         if (input$school_profile != "") {
-            
             basic <- basic[basic$School_Name == as.character(input$school_profile),]
-            
-            #basic <- c(basic$Total_Female, basic$Total_Male)
-            
             basic <- c(basic$Total_Female, basic$Total_Male)
-
         } else {
-            
             basic <- c(50, 50)
-            
         }
         
-        #basic <- c(basic$Total_Female, basic$Total_Male)
-        
-        #basic <- c(basic$Total_Female, basic$Total_Male)
     })
     
     output$distPie <- renderPlot({
-        #par(bg = "#DCDCDC")
         pie(pie_react(), labels = c("Female", "Male"), col = c('#e6a6c7', '#347dc1'))#, radius = 4)#, main, col, clockwise)
     })
     
-
-# Profiles: Basic Data Chart ----------------------------------------------
+    
+    # Profiles: Basic Data Chart ----------------------------------------------
     basic_data_react <- reactive({
         basic_vars <- c(
+            "School_Name_y",
             "Province",
             "Municipality",
             "Region_Name",
@@ -273,16 +299,19 @@ shinyServer(function(input, output, session) {
             "Total_Female",
             "Total_Male"
         )
-        
-        basic <- basic[basic$School_Name == as.character(input$school_profile),]
-        
-        if (input$p_schoolid != "") {
-            basic <- basic[basic$School_ID == as.integer(input$p_schoolid),]
-        }
-        
+
         basic <- basic[basic_vars]
         
-        basic <- setNames(basic, c('Province',
+        basic <- basic[basic$Region_Name == input$region_profile,]
+        
+        basic <- basic[basic$Division == input$division_profile,]
+        
+        basic <- basic[basic$District == input$district_profile,]
+        
+        basic <- basic[basic$School_Name == input$school_profile,]
+        
+        basic <- setNames(basic, c("School Name",
+                                   'Province',
                                    'Municipality',
                                    'Region',
                                    'District',
@@ -299,13 +328,16 @@ shinyServer(function(input, output, session) {
         
         basic <- as.data.frame(t(basic))
         basic <- tibble::rownames_to_column(basic, "Variable")
+        
+        basic
+        
         #basic$Variable <- profile_vars
         #colnames(sni) <- c("Variable", "Data")
         #colnames(sni)[1] <- "Variable"
     })
     
     output$p_table2 <- renderTable(basic_data_react(), colnames = FALSE)
-
+    
     
     
     
