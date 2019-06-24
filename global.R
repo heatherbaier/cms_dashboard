@@ -10,6 +10,7 @@ library(DT)
 library(rsconnect)
 library(shinythemes)
 library(rgdal)
+library(metricsgraphics)
 
 time_series <- readRDS(file = "./data/time_series.rds")
 
