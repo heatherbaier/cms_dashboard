@@ -28,9 +28,14 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                               
                                               div(tableOutput("variables_table"), align = "center"),
                                              
-                                             img(src='ansa_logo.png', align = "left", height = 100, width = 325),
+                                             div(img(src='CMS Logo hi res.jpg', height = 125, width = 350), align = "center"),
+
+                                              div(img(src='ansa_logo.png', height = 100, width = 325), align = "center"),
                                              
-                                             img(src='cms_logo.png', align = "right", height = 100, width = 350)#,
+                                                     div(img(src='Goalkeepers Logo.jpg', height = 125, width = 340), align = "center"),
+                                             
+                                             div(img(src='wm_logo1.png', height = 100, width = 200), align = "center")#,
+                                             
                                               
                                               # img(src='ansa_logo.png', align = "left", height = 100, width = 325),
                                               # 
@@ -115,7 +120,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                     
                                 )
                                 
-                            )
+                          )
                             
                    ),
                    
