@@ -1,10 +1,10 @@
 shinyServer(function(input, output, session) {
     
     
-    # SNI Methodology Table ---------------------------------------------------
+# SNI Methodology Table ---------------------------------------------------
     output$variables_table <- renderTable(methodology, colnames = TRUE, striped = TRUE, hover = TRUE, align = "c")
     
-    # Time Series Map ---------------------------------------------------------
+# Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
         time_series <- time_series[time_series$School_Year == input$year_map,]
         time_series <- filter(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
@@ -42,96 +42,39 @@ shinyServer(function(input, output, session) {
     
     
     
-    # Time Series Data Table --------------------------------------------------
+# Time Series Data Table --------------------------------------------------
     output$timeseries_table <- DT::renderDataTable(DT::datatable(data = ts_clean, options = list(autoWidth = FALSE), filter = "top"))
     
     
-    # School Profiles ---------------------------------------------------------
-    
-    
-    # Update Select Inputs ----------------------------------------------------
-    # observe({
-    #     districts <- if (is.null(input$region_profile)) {
-    #         character(0) } else {
-    #             filter(time_series, Region_Name %in% input$region_profile) %>%
-    #                 `$`(`District_Name`) %>%
-    #                     unique() %>%
-    #                         sort()
-    #         }
-    #     stillSelected <- isolate(input$district_profile[input$district_profile %in% districts])
-    #     updateSelectInput(session, "district_profile", choices = districts,
-    #                       selected = stillSelected)
-    # })
-    # 
-    # 
-    # observe({
-    #     schools <- if (is.null(input$region_profile)) {
-    #         character(0) } else {
-    #             time_series %>% 
-    #                 filter(Region_Name %in% input$region_profile,
-    #                                    is.null(input$district_profile) | District_Name %in% input$district_profile) %>%
-    #                 `$`('School_Name') %>%
-    #                     unique() %>%
-    #                         sort()
-    #         }
-    #         stillSelected <- isolate(input$school_profile[input$school_profile %in% schools])
-    #         updateSelectInput(session, "school_profile", choices = schools, selected = stillSelected)
-    # })
-    
-    
+# School Profiles ---------------------------------------------------------
     observe({
-        
         time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        
         updateSelectInput(session, "division_profile", choices = unique(time_series$Division_Name))
-        
     })
     
     
     observe({
-        
-        #time_series <- filter(time_series, Region_Name == input$region_profile & District_Name == input$district_profile)
-        
-        #time_series <- filter(time_series, Region_Name == input$region_profile & District_Name == input$district_profile)
-        
         time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        
         time_series <- time_series[time_series$Division_Name == input$division_profile,]
-        
         updateSelectInput(session, "district_profile", choices = unique(time_series$District_Name))
-        
     })
     
     observe({
-        
-        #time_series <- filter(time_series, Region_Name == input$region_profile & District_Name == input$district_profile)
-        
         time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        
         time_series <- time_series[time_series$Division_Name == input$division_profile,]
-        
         time_series <- time_series[time_series$District_Name == input$district_profile,]
-        
         updateSelectInput(session, "school_profile", choices = unique(time_series$School_Name))
-        
     })
     
     
-    # Profiles: SNI Table -----------------------------------------------------
+# Profiles: SNI Table -----------------------------------------------------
     profile_data_react <- reactive({
-        
         basic <- basic[basic$Region_Name == input$region_profile,]
-        
         basic <- basic[basic$Division == input$division_profile,]
-        
         basic <- basic[basic$District == input$district_profile,]
-        
         basic <- basic[basic$School_Name_y == input$school_profile,]
-        
         basic <- basic[profile_vars]
-        
         basic <- basic[basic$School_Name_y == as.character(input$school_profile),]
-        
         basic <- setNames(basic, c(
             'School Name',
             "School ID",
@@ -147,23 +90,11 @@ shinyServer(function(input, output, session) {
             'Internet Access',
             'Electricity Access'
         ))
-        
         basic <- as.data.frame(t(basic))
-        
         basic <- tibble::rownames_to_column(basic, "Variable")
-        
     })
     
     output$snitable_profile <- renderTable({
-        
-        
-        # validate(
-        #     
-        #     need(dim(), paste("Reports and data cannot be downloaded for", indicator_key(), sep = " "))
-        # 
-        #     )
-        
-        
         profile_data_react()
     })
     
@@ -176,36 +107,15 @@ shinyServer(function(input, output, session) {
         basic <- basic[basic$District == input$district_profile,]
         basic <- basic[basic$School_Name_y == input$school_profile,]
         basic <- basic[profile_vars]
-
-        
-        # profile_vars <- c(
-        #     'School_Name_y',
-        #     "School_ID",
-        #     "Region_Name",
-        #     "Division",
-        #     "District",
-        #     'shi_score',
-        #     'remoteness_index',
-        #     'cct_percentage',
-        #     'Student_Teacher_Ratio',
-        #     'Student_Classroom_Ratio',
-        #     'Water_Access',
-        #     'Internet_Access',
-        #     'Electricity_Access')
-        
     })
     
     
     
-    # Profiles: Histogram -----------------------------------------------------
+# Profiles: Histogram -----------------------------------------------------
     output$profile_hist <- renderPlot({
-        
         mv <- time_series[time_series$Region_Name == input$region_profile,]
-        
         mv <- mv[mv$Division_Name == input$division_profile,]
-        
         mv <- mv[mv$District_Name == input$district_profile,]
-        
         mv <- mv[mv$School_Name == input$school_profile,]
         
         if (input$profle_hist_var == 'shi_score') {
@@ -274,7 +184,7 @@ shinyServer(function(input, output, session) {
     
     
     
-    # Profiles: Gender Pie Chart ----------------------------------------------
+# Profiles: Gender Pie Chart ----------------------------------------------
     pie_react <- reactive({
         if (input$school_profile != "") {
             basic <- basic[basic$School_Name == as.character(input$school_profile),]
@@ -290,7 +200,7 @@ shinyServer(function(input, output, session) {
     })
     
     
-    # Profiles: Basic Data Chart ----------------------------------------------
+# Profiles: Basic Data Chart ----------------------------------------------
     basic_data_react <- reactive({
         basic_vars <- c(
             "School_Name_y",
@@ -310,15 +220,10 @@ shinyServer(function(input, output, session) {
         )
 
         basic <- basic[basic_vars]
-        
         basic <- basic[basic$Region_Name == input$region_profile,]
-        
         basic <- basic[basic$Division == input$division_profile,]
-        
         basic <- basic[basic$District == input$district_profile,]
-        
         basic <- basic[basic$School_Name == input$school_profile,]
-        
         basic <- setNames(basic, c("School Name",
                                    'Province',
                                    'Municipality',
@@ -337,17 +242,10 @@ shinyServer(function(input, output, session) {
         
         basic <- as.data.frame(t(basic))
         basic <- tibble::rownames_to_column(basic, "Variable")
-        
         basic
         
-        #basic$Variable <- profile_vars
-        #colnames(sni) <- c("Variable", "Data")
-        #colnames(sni)[1] <- "Variable"
     })
     
     output$p_table2 <- renderTable(basic_data_react(), colnames = FALSE)
-    
-    
-    
     
 })
