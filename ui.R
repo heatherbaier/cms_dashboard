@@ -30,13 +30,17 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                               
                                               div(tableOutput("variables_table"), align = "center"),
                                              
-                                              div(img(src='CMS Logo hi res.jpg', height = 125, width = 350), align = "center"),
-
-                                              div(img(src='ansa_logo.png', height = 100, width = 325), align = "center"),
+                                              # div(img(src='CMS Logo hi res.jpg', height = 125, width = 350), align = "center"),
+                                              # 
+                                              # div(img(src='ansa_logo.png', height = 100, width = 325), align = "center"),
+                                              # 
+                                              # div(img(src='Goalkeepers Logo.jpg', height = 125, width = 340), align = "center"),
+                                              # 
+                                              # div(img(src='wm_logo1.png', height = 100, width = 200), align = "center"),
+                                              # 
+                                              # div(img(src='gri_logo.png', height = 250, width = 450), align = "center"),
                                              
-                                              div(img(src='Goalkeepers Logo.jpg', height = 125, width = 340), align = "center"),
-                                             
-                                              div(img(src='wm_logo1.png', height = 100, width = 200), align = "center"),
+                                              div(img(src='all_logos.png', height = 700, width = 1200), align = "center"),
                                              
                                               hr(),
                                             
@@ -52,7 +56,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                               h3("Select your desired school pararameters using the selecters and slider inoputs on the left to see
                                                  schools on the map that fit your desired specifications.", align = "center"),
                                              
-                                             br(),
+                                              br(),
                                              
                                               h2(strong("Data Explorer"), align = "center"),
                                              
@@ -66,7 +70,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                                   you can filter for multiple variables. Click on the numbered boxes at the bottom right of the page to see the 
                                                   next observations fitting your desired criteria.", align = "center"),
                                              
-                                             br(),
+                                              br(),
                                              
                                               h2(strong("School Profiles"), align = "center"),
                                              
