@@ -6,7 +6,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                       
                                       column(10, offset = 1,
                                              
-                                              h1(tags$u("CheckMySchool School Neediness Index"), align = "center"),
+                                              h1("CheckMySchool School Neediness Index", align = "center"),
                                               
                                               h4("This School Neediness Index Map identifies which among 
                                                   the 44,751 public elementary and secondary schools in the 
@@ -21,61 +21,100 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                                   by the School Effectiveness Division (SED).", align = "center"),
                                               
                                               h4("Heather Baier and Angela Yost worked on this map and the study on School Neediness Index. 
-                                                 They came to the Philippines last May to July 2018 as Summer Fellows of William & Mary’s Global 
-                                                 Research Institute.", align = "center"),
+                                                  They came to the Philippines last May to July 2018 as Summer Fellows of William & Mary’s Global 
+                                                  Research Institute.", align = "center"),
+                                             
+                                              h1(" "),
                                               
-                                              h3(tags$u("Index variables and definitions:"), align = "center"),
+                                              h4(tags$b("Index variables and definitions:"), align = "center"),
                                               
                                               div(tableOutput("variables_table"), align = "center"),
                                              
-                                             div(img(src='CMS Logo hi res.jpg', height = 125, width = 350), align = "center"),
+                                              div(img(src='CMS Logo hi res.jpg', height = 125, width = 350), align = "center"),
 
                                               div(img(src='ansa_logo.png', height = 100, width = 325), align = "center"),
                                              
-                                                     div(img(src='Goalkeepers Logo.jpg', height = 125, width = 340), align = "center"),
+                                              div(img(src='Goalkeepers Logo.jpg', height = 125, width = 340), align = "center"),
                                              
-                                             div(img(src='wm_logo1.png', height = 100, width = 200), align = "center")#,
+                                              div(img(src='wm_logo1.png', height = 100, width = 200), align = "center"),
                                              
-                                              
-                                              # img(src='ansa_logo.png', align = "left", height = 100, width = 325),
-                                              # 
-                                              # img(src='cms_logo.png', align = "right", height = 100, width = 350)
-                                      
+                                              hr(),
+                                            
+                                              h1(tags$u("How to use the CheckMySchool Data Portal"), align = "center"),
+                                             
+                                              h2(strong("School Needindess Index Map"), align = "center"),
+                                             
+                                              h3("The first tab of the CMS Data Portal houses a map of every public shcools in the Philippines with 
+                                                 filters aviable to choose which shcools you would to display.", align = "center"),
+                                             
+                                              div(img(src='tutorial1.png', height = 700, width = 1400), align = "center"),
+                                             
+                                              h3("Select your desired school pararameters using the selecters and slider inoputs on the left to see
+                                                 schools on the map that fit your desired specifications.", align = "center"),
+                                             
+                                             br(),
+                                             
+                                              h2(strong("Data Explorer"), align = "center"),
+                                             
+                                              h3("The second tab of the CMS Data Portal, the Data Explorer, works much like the School Neediness Index Map, 
+                                                  expect the data is displayed in a table instead of a map.", align = "center"),
+                                             
+                                              div(img(src='tutorial2.png', height = 700, width = 1400), align = "center"),
+                                             
+                                              h3("Click on the empty box below a column name to choose 
+                                                  the observation you would like to filter for and the table will adjust itself accordingly. For drop down menus, 
+                                                  you can filter for multiple variables. Click on the numbered boxes at the bottom right of the page to see the 
+                                                  next observations fitting your desired criteria.", align = "center"),
+                                             
+                                             br(),
+                                             
+                                              h2(strong("School Profiles"), align = "center"),
+                                             
+                                              h3("The third tab of the CMS Data Portal, School Profiles, allows you to choose an individual school to see it’s 
+                                                  respective data.", align = "center"),
+                                             
+                                              div(img(src='tutorial3.png', height = 700, width = 1400), align = "center"),
+                                             
+                                              h3("Choose a school region in the right-side panel and continue to filter for School District, Divisions 
+                                                 and Name to find you desired school. The table on the top left shows the School Neediness Index data for the chosen school.
+                                                 The histogram on the top right shows the distribution of the selected variable. The table on the bottom left shows the 
+                                                 basic data for each school. The pie chart on the bottom right shows the gender distribution of the selected school.", align = "center")
+                                             
                                       )
-                                      
+
                             )
                             
                    ),
                    
                    # tabPanel("About the School Neediness Index",
-                   #          
+                   # 
                    #          column(10, offset = 1,
-                   #          
+                   # 
                    #          h1("School Neediness Index Methodology", align = "center"),
-                   #          
+                   # 
                    #          h1(" "),
-                   #          
-                   #          h5("The variables in the School Neediness Index were determined based on focus group and 
+                   # 
+                   #          h5("The variables in the School Neediness Index were determined based on focus group and
                    #              individual discussions with school teachers and principals in Guimaras and Rizal.", align = "center"),
-                   #          
+                   # 
                    #          h1(" "),
-                   #          
+                   # 
                    #          hr(),
-                   #          
+                   # 
                    #          fluidRow(
-                   #              
+                   # 
                    #              column(10, offset = 1,
-                   #                     
+                   # 
                    #                     tableOutput("variables_table")
-                   #                     
+                   # 
                    #              )
-                   #              
+                   # 
                    #          ),
-                   #          
+                   # 
                    #          hr()
-                   #          
+                   # 
                    #      )
-                   #          
+                   # 
                    # ),
                    
                    tabPanel(h4("School Neediness Index Map", style = "color: #ffffff;"),
@@ -237,6 +276,6 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                             
                    )
                    
-)
+        )
 
 )
