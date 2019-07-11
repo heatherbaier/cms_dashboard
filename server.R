@@ -14,7 +14,7 @@ shinyServer(function(input, output, session) {
         time_series <- time_series[time_series$Original_Internet_Boolean %in% input$internet_map,]
         time_series <- time_series[time_series$Original_Electricity_Boolean %in% input$elec_map,]
         time_series <- filter(time_series, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
-        time_series <- filter(time_series, cct_percentage >= input$cct_map[1] & remoteness_index <= input$cct_map[2])
+        time_series <- filter(time_series, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
         time_series
     })
     
@@ -47,23 +47,28 @@ shinyServer(function(input, output, session) {
     
     
 # School Profiles ---------------------------------------------------------
+
     observe({
         time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        updateSelectInput(session, "division_profile", choices = unique(time_series$Division_Name))
+        updateSelectInput(session, "division_profile", choices = c("All Divisions" = "", sort(unique(as.character(time_series$Division_Name)))))
     })
     
     
     observe({
-        time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        time_series <- time_series[time_series$Division_Name == input$division_profile,]
-        updateSelectInput(session, "district_profile", choices = unique(time_series$District_Name))
+        if (input$division_profile != "") {
+            time_series <- time_series[time_series$Region_Name == input$region_profile,]
+            time_series <- time_series[time_series$Division_Name == input$division_profile,]
+            updateSelectInput(session, "district_profile", choices = c("All Districts" = "",  sort(unique(as.character(time_series$District_Name)))))
+        }
     })
     
     observe({
-        time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        time_series <- time_series[time_series$Division_Name == input$division_profile,]
-        time_series <- time_series[time_series$District_Name == input$district_profile,]
-        updateSelectInput(session, "school_profile", choices = unique(time_series$School_Name))
+        if (input$district_profile != "") {
+            time_series <- time_series[time_series$Region_Name == input$region_profile,]
+            time_series <- time_series[time_series$Division_Name == input$division_profile,]
+            time_series <- time_series[time_series$District_Name == input$district_profile,]
+            updateSelectInput(session, "school_profile", choices = c("All Schools" = "",  sort(unique(as.character(time_series$School_Name)))))
+        }
     })
     
     
@@ -123,61 +128,80 @@ shinyServer(function(input, output, session) {
             xlim_var = c(0.001946283,1.501641408)
             breaks_var = 50
             mv <- mv$shi_score
+            xlabel <- "School Neediness Index"
         }
         else if (input$profle_hist_var == 'cct_percentage') {
             hist_var = basic$cct_percentage
             xlim_var = c(0,100)
             breaks_var = 40
             mv <- mv$cct_percentage
+            xlabel <- "Percentage of Students Recieving Conditional Cash Transfers"
+            
         }
         else if (input$profle_hist_var == 'remoteness_index') {
             hist_var = basic$remoteness_index
             xlim_var = c(-800,1000)
             breaks_var = 160
             mv <- mv$remoteness_index
+            xlabel <- "Remoteness Index"
+            
         }
         else if (input$profle_hist_var == 'Student_Teacher_Ratio') {
             hist_var = basic$Student_Teacher_Ratio
             xlim_var = c(0,250)
             breaks_var = 120
             mv <- mv$Student_Teacher_Ratio
+            xlabel <- "Student Teacher Ratio"
+            
         }
         else if (input$profle_hist_var == 'Student_Classroom_Ratio') {
             hist_var = basic$Student_Classroom_Ratio
             xlim_var = c(0,250)
             breaks_var = 120
             mv <- mv$Student_Classroom_Ratio
+            xlabel <- "Student Classroom Ratio"
+            
         }
         else if (input$profle_hist_var == 'Water_Access') {
             hist_var = basic$Original_Water_Boolean
             xlim_var = c(0,1)
             breaks_var = 2
             mv <- mv$Original_Water_Boolean
+            xlabel <- "Water Access"
+            
         }
         else if (input$profle_hist_var == 'Electricity_Access') {
             hist_var = basic$Original_Electricity_Boolean
             xlim_var = c(0,1)
             breaks_var = 2
             mv <- mv$Original_Electricity_Boolean
+            xlabel <- "Electricity Access"
+            
         }
         else if (input$profle_hist_var == 'Internet_Access') {
             hist_var = basic$Original_Internet_Boolean
             xlim_var = c(0,1)
             breaks_var = 2
             mv <- mv$Original_Internet_Boolean
+            xlabel <- "Internet Access"
+            
         }
         else {
             hist_var = basic$cct_percentage
             xlim_var = c(0,1000)
             breaks_var = 50
             mv <- mv$cct_percentage
+            xlabel <- "Percentage of Students Recieving Conditional Cash Transfers"
+            
         }
 
         hist(hist_var,
              xlim = xlim_var,
              breaks = breaks_var,
-             col="#1C307E",
-             xlab = input$profle_hist_var
+             col = "#1C307E",
+             xlab = input$profle_hist_var,
+             main = xlabel#,
+             # xlab = xlabel
             )
         #abline(v = mv, col="red", lwd = 5)
     })
@@ -187,7 +211,12 @@ shinyServer(function(input, output, session) {
 # Profiles: Gender Pie Chart ----------------------------------------------
     pie_react <- reactive({
         if (input$school_profile != "") {
-            basic <- basic[basic$School_Name == as.character(input$school_profile),]
+            
+            basic <- basic[basic$Region_Name == input$region_profile,]
+            basic <- basic[basic$Division == input$division_profile,]
+            basic <- basic[basic$District == input$district_profile,]
+            basic <- basic[basic$School_Name_y == input$school_profile,]
+
             basic <- c(basic$Total_Female, basic$Total_Male)
         } else {
             basic <- c(50, 50)
@@ -218,6 +247,7 @@ shinyServer(function(input, output, session) {
             "Total_Female",
             "Total_Male"
         )
+        
 
         basic <- basic[basic_vars]
         basic <- basic[basic$Region_Name == input$region_profile,]
@@ -247,5 +277,24 @@ shinyServer(function(input, output, session) {
     })
     
     output$p_table2 <- renderTable(basic_data_react(), colnames = FALSE)
+    
+    
+    output$school_select_map <- renderLeaflet({
+        basic <- basic[basic$Region_Name == input$region_profile,]
+        basic <- basic[basic$Division == input$division_profile,]
+        basic <- basic[basic$District == input$district_profile,]
+        basic <- basic[basic$School_Name == input$school_profile,]
+        
+        leaflet(data = basic) %>%
+            clearMarkerClusters() %>%
+            # addTiles(
+            #     urlTemplate = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
+            #     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+            # ) %>%
+            addTiles() %>%
+            # setView(lat = 12.8797, lng = 122.7740, zoom = 6) %>%
+            addCircleMarkers()
+        
+    })
     
 })
