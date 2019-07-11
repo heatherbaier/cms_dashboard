@@ -11,6 +11,7 @@ library(rsconnect)
 library(shinythemes)
 library(rgdal)
 library(metricsgraphics)
+library(sf)
 
 time_series <- readRDS(file = "./data/time_series.rds")
 
@@ -133,4 +134,6 @@ ts_clean <- setNames(ts_clean, c(
 
 
 #basic <- basic %>% distinct(School_ID, keep_all = TRUE)
+
+# ts_shp <- sf::read_sf("./data/shp/time_series.csv.shp")
 
