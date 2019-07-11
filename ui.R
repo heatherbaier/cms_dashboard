@@ -183,7 +183,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                              
                                              #textInput("p_schoolid", label = "Optional: School ID", value = ""),
                                              
-                                             selectInput('region_profile', "Choose School Region", choices = c("Select Region" = "", unique(as.character(time_series$Region_Name)
+                                             selectInput('region_profile', "Select Region", choices = c("Select Region" = "",  sort(unique(as.character(time_series$Region_Name))
                                              )
                                              )
                                              ),
@@ -215,7 +215,9 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                              
                                              hr(),
                                              
-                                             helpText("Select a school to see its resources and classroom conditions and how it stacks up to national averages.")#,
+                                             helpText("Select a school to see its resources and classroom conditions and how it stacks up to national averages."),
+                                             
+                                             leafletOutput('school_select_map')
                                              
                                              #helpText("If there is more than one school with your selected name, filter to your desired school by entering its School ID from the table to the left.")
                                              
