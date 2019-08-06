@@ -48,7 +48,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                             
                             h2(tags$u("How to use the CheckMySchool Data Portal"), align = "center"),
                             
-                            h3(strong("School Needindess Index Map"), align = "center"),
+                            h3(strong("School Neediness Index Map"), align = "center"),
                             
                             h4("The first tab of the CMS Data Portal houses a map of every public schools in the Philippines with 
                                                  filters available to choose which schools you would like to display.", align = "center"),
