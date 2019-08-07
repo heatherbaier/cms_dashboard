@@ -7,14 +7,16 @@ shinyServer(function(input, output, session) {
 # Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
         time_series <- time_series[time_series$School_Year == input$year_map,]
-        time_series <- filter(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
-        time_series <- filter(time_series, Student_Teacher_Ratio >= input$stratio_map[1] & Student_Teacher_Ratio <= input$stratio_map[2])
-        time_series <- filter(time_series, Student_Classroom_Ratio >= input$scratio_map[1] & Student_Classroom_Ratio <= input$scratio_map[2])
+        time_series <- subset(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        
+        # time_series <- filter(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        time_series <- subset(time_series, Student_Teacher_Ratio >= input$stratio_map[1] & Student_Teacher_Ratio <= input$stratio_map[2])
+        time_series <- subset(time_series, Student_Classroom_Ratio >= input$scratio_map[1] & Student_Classroom_Ratio <= input$scratio_map[2])
         time_series <- time_series[time_series$Original_Water_Boolean %in% input$water_map,]
         time_series <- time_series[time_series$Original_Internet_Boolean %in% input$internet_map,]
         time_series <- time_series[time_series$Original_Electricity_Boolean %in% input$elec_map,]
-        time_series <- filter(time_series, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
-        time_series <- filter(time_series, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
+        time_series <- subset(time_series, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
+        time_series <- subset(time_series, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
         time_series
     })
     
