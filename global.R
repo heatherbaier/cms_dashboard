@@ -5,7 +5,7 @@ library(leaflet)
 # library(RColorBrewer)
 # library(scales)
 # library(lattice)
-library(dplyr)
+# library(dplyr)
 library(DT)
 # library(rsconnect)
 # library(shinythemes)
@@ -19,11 +19,11 @@ time_series <- readRDS(file = "./data/time_series.rds")
 
 #pwd <- readRDS(file = "pwd_data.rds")
 
-basic <- readRDS(file = "./data/basic_data.rds")
+basic <- readRDS(file = "./basic_data_v2.rds")
 
 methodology <- readRDS(file = "./data/methodology.rds")
 
-basic <- basic %>% distinct(School_ID, .keep_all = TRUE)
+# basic <- basic %>% distinct(School_ID, .keep_all = TRUE)
 
 
 time_series$Latitude <-as.numeric(as.character(time_series$Latitude))
