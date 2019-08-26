@@ -7,6 +7,7 @@ library(leaflet)
 # library(lattice)
 # library(dplyr)
 library(DT)
+library(highcharter)
 # library(rsconnect)
 # library(shinythemes)
 # library(rgdal)
@@ -23,10 +24,41 @@ basic <- readRDS(file = "./basic_data_v2.rds")
 
 methodology <- readRDS(file = "./data/methodology.rds")
 
-# basic <- basic %>% distinct(School_ID, .keep_all = TRUE)
+# basic <- basic %>% distinct(school_id, .keep_all = TRUE)
+
+# basic <- read.csv("./data/pwd_gender_basic.csv")
+
+# saveRDS(basic, "./data/pwd_gender_basic.rds")
+
+# basic <- readRDS("./data/pwd_gender_basic.rds")
 
 
-time_series$Latitude <-as.numeric(as.character(time_series$Latitude))
+
+# all_data <- read.csv("./data/this_one.csv")
+# saveRDS(all_data, "./data/this_one.rds")
+# all_data <- readRDS("./data/this_one.rds")
+
+
+# all_data$latitude <- as.numeric(as.character(all_data$latitude))
+
+# saveRDS(all_data, "./data/this_one.rds")
+all_data <- readRDS("./data/this_one.rds")
+
+all_data$numeric <- as.character(all_data$school_year)
+all_data$region <- as.character(all_data$region)
+
+all_data$original_electricity_boolean[all_data$original_electricity_boolean == 1] <- "Yes"
+all_data$original_electricity_boolean[all_data$original_electricity_boolean == 0] <- "No"
+
+all_data$original_water_boolean[all_data$original_water_boolean == 1] <- "Yes"
+all_data$original_water_boolean[all_data$original_water_boolean == 0] <- "No"
+
+all_data$original_internet_boolean[all_data$original_internet_boolean == 1] <- "Yes"
+all_data$original_internet_boolean[all_data$original_internet_boolean == 0] <- "No"
+
+
+
+# time_series$Latitude <-as.numeric(as.character(time_series$Latitude))
 
 # Input Variables ---------------------------------------------------------
 pwd_vars <- c(

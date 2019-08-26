@@ -1,6 +1,6 @@
-shinyUI(navbarPage(" ", theme = "styles.css",
+shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), theme = "styles.css",
                    
-                   tabPanel(h4("Welcome", style = "color: #ffffff;"),
+                   tabPanel(h5("Welcome", style = "color: #ffffff;"),
                             
                             mainPanel(width = 11,
                                       
@@ -25,14 +25,14 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                                   Research Institute.", align = "center"),
                                              
                                               h1(" "),
-                                              
-                                              h4(tags$b("Index variables and definitions:"), align = "center"),
-                                              
-                                              div(tableOutput("variables_table"), align = "center"),
                                              
                                               hr(),
                                              
-                                              div(h4(tags$u(strong("Contributors"))), align = "center"),
+                                              h1(" "),
+
+                                              h4(tags$b("School Neediness Index Variables and Definitions"), align = "center"),
+                                              
+                                              div(tableOutput("variables_table"), align = "center"),
                                              
                                               div(img(src='all_logos.png', height = 550, width = 1000), align = "center"),
                                              
@@ -44,49 +44,59 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                             
                    ),
                    
-                   tabPanel(h4("User Guide", style = "color: #ffffff;"),
-                            
-                            h2(tags$u("How to use the CheckMySchool Data Portal"), align = "center"),
+                   #navbarMenu(h5("About", style = "color: #ffffff;"),
+                              
+                   tabPanel(h5("User Guide", style = "color: #ffffff;"),
                             
                             h3(strong("School Neediness Index Map"), align = "center"),
                             
-                            h4("The first tab of the CMS Data Portal houses a map of every public schools in the Philippines with 
+                            h5("The first tab of the CMS Data Portal houses a map of every public schools in the Philippines with 
                                                  filters available to choose which schools you would like to display.", align = "center"),
                             
-                            div(img(src='tutorial1.png', height = 700, width = 1400), align = "center"),
-                            
-                            h4("Select your desired school pararameters using the selecters and slider inoputs on the left to see
+                            h5("Select your desired school pararameters using the selecters and slider inputs on the left to see
                                                  schools on the map that fit your desired specifications.", align = "center"),
                             
-                            br(),
+                            div(img(src='tutorial1.png', height = 500, width = 900), align = "center"),
+                            
+                            h1(" "),
                             
                             h3(strong("Data Explorer"), align = "center"),
                             
-                            h4("The second tab of the CMS Data Portal, the Data Explorer, works much like the School Neediness Index Map, 
+                            h5("The second tab of the CMS Data Portal, the Data Explorer, works much like the School Neediness Index Map, 
                                                   except the data is displayed in a table instead of a map.", align = "center"),
                             
-                            div(img(src='tutorial2.png', height = 700, width = 1400), align = "center"),
-                            
-                            h4("Click on the empty box below a column name to choose 
+                            h5("Click on the empty box below a column name to choose 
                                                   the observation you would like to filter for and the table will adjust itself accordingly. For drop down menus, 
                                                   you can filter for multiple variables. Click on the numbered boxes at the bottom right of the page to see the 
                                                   next observations fitting your desired criteria.", align = "center"),
                             
-                            br(),
+                            div(img(src='tutorial2.png', height = 500, width = 900), align = "center"),
+
+                            h1(" "),
                             
                             h3(strong("School Profiles"), align = "center"),
                             
                             h5("The third tab of the CMS Data Portal, School Profiles, allows you to choose an individual school to see its 
                                                   respective data.", align = "center"),
                             
-                            div(img(src='tutorial3.png', height = 700, width = 1400), align = "center"),
-                            
-                            h4("Choose a school region in the right-side panel and continue to filter for School District, Divisions 
+                            h5("Choose a school region in the right-side panel and continue to filter for School District, Divisions 
                                                  and Name to find you desired school. The table on the top left shows the School Neediness Index data for the chosen school.
                                                  The histogram on the top right shows the distribution of the selected variable. The table on the bottom left shows the 
-                                                 basic data for each school. The pie chart on the bottom right shows the gender distribution of the selected school.", align = "center")
+                                                 basic data for each school. The pie chart on the bottom right shows the gender distribution of the selected school.", align = "center"),
                             
+                            div(img(src='tutorial3.png', height = 500, width = 900), align = "center"),
+                            
+                            h1(" ")
+
                             ),
+                   
+                   #tabPanel(h5("Methodology", style = "color: #000000;"),
+                            
+                            #h2("Methodology heeeerrrreeee")
+                            
+                            #)
+                   
+                   #),
                    
                    # tabPanel("About the School Neediness Index",
                    # 
@@ -119,7 +129,7 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                    # 
                    # ),
                    
-                   tabPanel(h4("School Neediness Index Map", style = "color: #ffffff;"),
+                   tabPanel(h5("School Neediness Index Map", style = "color: #ffffff;"),
                             
                             sidebarLayout(
                                 
@@ -127,31 +137,31 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                     
                                     selectInput('year_map', "School Year", choices = c(2015, 2016, 2017), selected = 2015),
                                     
-                                    sliderInput("shi_score_map", "School Neediness Index Score", 0, max(time_series$shi_score),
+                                    sliderInput("shi_score_map", "School Neediness Index Score", 0, max(all_data$shi_score),
                                                 
-                                                value = range(0, max(time_series$shi_score)), step = 0.1),
+                                                value = range(0, max(all_data$shi_score)), step = 0.1),
                                     
-                                    sliderInput("stratio_map", "Student Teacher Ratio", min(time_series$Student_Teacher_Ratio), max(time_series$Student_Teacher_Ratio),
+                                    sliderInput("stratio_map", "Student Teacher Ratio", min(all_data$student_teacher_ratio), max(all_data$student_teacher_ratio),
                                                 
-                                                value = range(time_series$Student_Teacher_Ratio), step = 1),
+                                                value = range(all_data$student_teacher_ratio), step = 1),
                                     
-                                    sliderInput("scratio_map", "Student Classroom Ratio", min(time_series$Student_Classroom_Ratio), max(time_series$Student_Classroom_Ratio),
+                                    sliderInput("scratio_map", "Student Classroom Ratio", min(all_data$student_classroom_ratio), max(all_data$student_classroom_ratio),
                                                 
-                                                value = range(time_series$Student_Classroom_Ratio), step = 1),
+                                                value = range(all_data$student_classroom_ratio), step = 1),
                                     
-                                    selectInput('water_map', "Access to Water", choices = c(0, 1), multiple = TRUE, selected = c(0, 1)),
+                                    selectInput('water_map', "Access to Water", choices = c("Yes", "No"), multiple = TRUE, selected = c("Yes", "No")),
                                     
-                                    selectInput('internet_map', "Access to Internet", choices = c(0, 1), multiple = TRUE, selected = c(0, 1)),
+                                    selectInput('internet_map', "Access to Internet", choices = c("Yes", "No"), multiple = TRUE, selected = c("Yes", "No")),
                                     
-                                    selectInput('elec_map', "Access to Electricity", choices = c(0, 1), multiple = TRUE, selected = c(0, 1)),
+                                    selectInput('elec_map', "Access to Electricity", choices = c("Yes", "No"), multiple = TRUE, selected = c("Yes", "No")),
                                     
-                                    sliderInput("ri_map", "Remoteness Index", min(time_series$remoteness_index, na.rm = TRUE), max(time_series$remoteness_index, na.rm = TRUE),
+                                    sliderInput("ri_map", "Remoteness Index", min(all_data$remoteness_index, na.rm = TRUE), max(all_data$remoteness_index, na.rm = TRUE),
                                                 
-                                                value = range(time_series$remoteness_index, na.rm = TRUE), step = 100),
+                                                value = range(all_data$remoteness_index, na.rm = TRUE), step = 100),
                                     
-                                    sliderInput("cct_map", "Percentage of Student's Recieving CCT's", min(time_series$cct_percentage, na.rm = TRUE), max(time_series$cct_percentage, na.rm = TRUE),
+                                    sliderInput("cct_map", "Percentage of Student's Recieving CCT's", min(all_data$cct_percentage, na.rm = TRUE), max(all_data$cct_percentage, na.rm = TRUE),
                                                 
-                                                value = range(time_series$cct_percentage, na.rm = TRUE), step = 10)
+                                                value = range(all_data$cct_percentage, na.rm = TRUE), step = 10)
                                     
                                 ),
                                 
@@ -165,26 +175,19 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                             
                    ),
                    
-                   tabPanel(h4("Data Explorer", style = "color: #ffffff;"),
+                   tabPanel(h5("Data Explorer", style = "color: #ffffff;"),
                             
                             DT::dataTableOutput("timeseries_table")
                             
                    ),
                    
-                   tabPanel(h4("School Profiles", style = "color: #ffffff;"),
-                            
+                   tabPanel(h5("School Profiles", style = "color: #ffffff;"),
+                          
                             sidebarLayout(
                                 
                                 sidebarPanel(width = 3,
-                                             
-                                             #selectInput("school_profile", label = "Choose School", choices = c(as.character(basic$School_Name))),
-                                             
-                                             #textInput("p_schoolid", label = "Optional: School ID", value = ""),
-                                             
-                                             selectInput('region_profile', "Select Region", choices = c("Select Region" = "",  sort(unique(as.character(time_series$Region_Name))
-                                             )
-                                             )
-                                             ),
+                                            
+                                             selectInput('region_profile', "Select Region", choices = c("Select Region" = "",  sort(unique(as.character(all_data$region))))),
                                              
                                              conditionalPanel("input.region_profile",
                                                               
@@ -217,31 +220,33 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                              
                                              leafletOutput('school_select_map')
                                              
-                                             #helpText("If there is more than one school with your selected name, filter to your desired school by entering its School ID from the table to the left.")
-                                             
                                 ),
                                 
                                 mainPanel(
+                                  
+                                  tabsetPanel(
+                                    
+                                    tabPanel("School Year 2015 - 2016",
+                                             
+                                             h1(" "),
                                     
                                     fluidRow(
                                         column(5, style = "background-color: #DCDCDC; border-radius: 5px; height: 500px;",
                                                
                                                div(h4(tags$u("School Neediness Index Data")), align = "center"),
                                                
-                                               tableOutput("snitable_profile")
+                                               tableOutput("snitable_profile_2015")
                                                
                                         ),
                                         
                                         column(1, " "),
                                         
-                                        column(5, style = "border: 2px solid #DCDCDC; border-radius: 5px; height: 500px;",
+                                        column(5, style = "background-color: #DCDCDC; border-radius: 2px; height: 500px;",
                                                
-                                               div(h4(tags$u("SNI Data Visualization")), align = "center"),
+                                               div(h4(tags$u("Basic School Data")), align ="center"),#, style="color:red"),
                                                
-                                               div(selectInput('profle_hist_var', ' ', choices = vars), align = "center"),
-                                               
-                                               plotOutput("profile_hist", height = "300px")
-                                               
+                                               tableOutput("p_table2_2015")
+
                                         ),
                                         
                                         column(1)
@@ -251,22 +256,22 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                     hr(),
                                     
                                     fluidRow(
-                                        
-                                        column(5, style = "background-color: #DCDCDC; border-radius: 5px; height: 500px;",
-                                               
-                                               div(h4(tags$u("Basic School Data")), align ="center"),#, style="color:red"),
-                                               
-                                               tableOutput("p_table2")
-                                               
-                                        ),
-                                        
-                                        column(1, " "),
-                                        
-                                        column(5, style = "border: 2px solid #DCDCDC; border-radius: 5px; height: 500px;",
+
+                                        column(5, #style = "border: 2px solid #DCDCDC; border-radius: 2px; height: 500px;",
                                                
                                                div(h4(tags$u("Male to Female Student Ratio")), align ="center"),
                                                
-                                               plotOutput("distPie")
+                                               plotOutput("distPie_2015")
+                                               
+                                        ),#columnrowclose
+                                        
+                                        column(1, h1(" ")),
+                                        
+                                        column(5, #style = "border: 2px solid #DCDCDC; border-radius: 2px; height: 500px;",
+                                               
+                                               div(h4(tags$u("Distribution of Students with Disabilities")), align ="center"),
+                                               
+                                               highchartOutput("pwdChart_2015")
                                                
                                         )#columnrowclose
                                         
@@ -274,9 +279,123 @@ shinyUI(navbarPage(" ", theme = "styles.css",
                                     
                                     hr()#fluidrowclose
                                     
-                                )#mainpanelrowclose
+                                ),#mainpanelrowclose
+                                
+                                tabPanel("School Year 2016 - 2017",
+                                         
+                                         h1(" "),
+
+                                         fluidRow(
+                                           
+                                           column(5, style = "background-color: #DCDCDC; border-radius: 5px; height: 500px;",
+                                                  
+                                                  div(h4(tags$u("School Neediness Index Data")), align = "center"),
+                                                  
+                                                  tableOutput("snitable_profile_2016")
+                                                  
+                                           ),
+                                           
+                                           column(1, " "),
+                                           
+                                           column(5, style = "background-color: #DCDCDC; border-radius: 2px; height: 500px;",
+                                                  
+                                                  div(h4(tags$u("Basic School Data")), align ="center"),#, style="color:red"),
+                                                  
+                                                  tableOutput("p_table2_2016")
+                                                  
+                                           ),
+                                           
+                                           column(1)
+                                           
+                                         ),
+                                         
+                                         hr(),
+                                         
+                                         fluidRow(
+
+                                           column(5, #style = "border: 2px solid #DCDCDC; border-radius: 2px; height: 500px;",
+                                                  
+                                                  div(h4(tags$u("Male to Female Student Ratio")), align ="center"),
+                                                  
+                                                  plotOutput("distPie_2016")
+                                                  
+                                           ),#columnrowclose
+                                           
+                                           column(1, h1(" ")),
+                                           
+                                           column(5, #style = "border: 2px solid #DCDCDC; border-radius: 2px; height: 500px;",
+                                                  
+                                                  div(h4(tags$u("Distribution of Students with Disabilities")), align ="center"),
+                                                  
+                                                  highchartOutput("pwdChart_2016")
+                                                  
+                                           )#columnrowclose
+                                           
+                                         ),
+                                         
+                                         hr()#fluidrowclose
+                                         
+                                         ),
+                                
+                                tabPanel("School Year 2017 - 2018",
+                                 
+                                 fluidRow(
+                                   
+                                   column(5, style = "background-color: #DCDCDC; border-radius: 5px; height: 500px;",
+                                          
+                                          div(h4(tags$u("School Neediness Index Data")), align = "center"),
+                                          
+                                          tableOutput("snitable_profile_2017")
+                                          
+                                   ),
+                                   
+                                   column(1, " "),
+                                   
+                                   column(5, style = "background-color: #DCDCDC; border-radius: 2px; height: 500px;",
+                                          
+                                          div(h4(tags$u("Basic School Data")), align ="center"),#, style="color:red"),
+                                          
+                                          tableOutput("p_table2_2017")
+                                          
+                                   ),
+                                   
+                                   column(1)
+                                   
+                                 ),
+                                 
+                                 hr(),
+                                 
+                                 fluidRow(
+                                   
+                                   column(5, #style = "border: 2px solid #DCDCDC; border-radius: 2px; height: 500px;",
+                                          
+                                          div(h4(tags$u("Male to Female Student Ratio")), align ="center"),
+                                          
+                                          plotOutput("distPie_2017")
+                                          
+                                   ),#columnrowclose
+                                   
+                                   column(1, h1(" ")),
+                                   
+                                   column(5, #style = "border: 2px solid #DCDCDC; border-radius: 2px; height: 500px;",
+                                          
+                                          div(h4(tags$u("Distribution of Students with Disabilities")), align ="center"),
+                                          
+                                          highchartOutput("pwdChart_2017")
+                                          
+                                   )#columnrowclose
+                                   
+                                 ),
+                                 
+                                 hr()#fluidrowclose
+                                 
+                                )
                                 
                             )#sidebarlayoutclose
+                            
+                            )
+                            
+                            )
                             
                    )
                    

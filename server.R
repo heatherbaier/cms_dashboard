@@ -6,18 +6,18 @@ shinyServer(function(input, output, session) {
     
 # Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
-        time_series <- time_series[time_series$School_Year == input$year_map,]
-        time_series <- subset(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        all_data <- all_data[all_data$school_year == input$year_map,]
+        all_data <- subset(all_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
         
-        # time_series <- filter(time_series, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
-        time_series <- subset(time_series, Student_Teacher_Ratio >= input$stratio_map[1] & Student_Teacher_Ratio <= input$stratio_map[2])
-        time_series <- subset(time_series, Student_Classroom_Ratio >= input$scratio_map[1] & Student_Classroom_Ratio <= input$scratio_map[2])
-        time_series <- time_series[time_series$Original_Water_Boolean %in% input$water_map,]
-        time_series <- time_series[time_series$Original_Internet_Boolean %in% input$internet_map,]
-        time_series <- time_series[time_series$Original_Electricity_Boolean %in% input$elec_map,]
-        time_series <- subset(time_series, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
-        time_series <- subset(time_series, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
-        time_series
+        # all_data <- filter(all_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        all_data <- subset(all_data, student_teacher_ratio >= input$stratio_map[1] & student_teacher_ratio <= input$stratio_map[2])
+        all_data <- subset(all_data, student_classroom_ratio >= input$scratio_map[1] & student_classroom_ratio <= input$scratio_map[2])
+        all_data <- all_data[all_data$original_water_boolean %in% input$water_map,]
+        all_data <- all_data[all_data$original_internet_boolean %in% input$internet_map,]
+        all_data <- all_data[all_data$original_electricity_boolean %in% input$elec_map,]
+        all_data <- subset(all_data, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
+        all_data <- subset(all_data, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
+        all_data
     })
     
     output$map <- renderLeaflet({
@@ -29,16 +29,16 @@ shinyServer(function(input, output, session) {
             ) %>%
             setView(lat = 12.8797, lng = 122.7740, zoom = 6) %>%
             addMarkers(
-                clusterOptions = markerClusterOptions(), popup = ~paste("<b>School Name:</b>", time_series$School_Name, "<br/>",
-                                                                        "<b>School ID:</b>", time_series$School_ID, "<br/>",
-                                                                        "<b>School Neediness Score:</b>", time_series$shi_score, "<br/>",
-                                                                        "<b>Student Teacher Ratio:</b>", time_series$Student_Teacher_Ratio, "<br/>",
-                                                                        "<b>Student Classroom Ratio:</b>", time_series$Student_Classroom_Ratio, "<br/>",
-                                                                        "<b>Water Access:</b>", time_series$Original_Water_Boolean, "<br/>",
-                                                                        "<b>Internet Access:</b>", time_series$Original_Internet_Boolean, "<br/>",
-                                                                        "<b>Electricity Access:</b>", time_series$Original_Electricity_Boolean, "<br/>",
-                                                                        "<b>Remoteness Index:</b>", time_series$remoteness_index, "<br/>",
-                                                                        "<b>CCT Percentage:</b>", time_series$cct_percentage, "<br/>")
+                clusterOptions = markerClusterOptions(), popup = ~paste("<b>School Name:</b>", all_data$school_name, "<br/>",
+                                                                        "<b>School ID:</b>", all_data$school_id, "<br/>",
+                                                                        "<b>School Neediness Score:</b>", all_data$shi_score, "<br/>",
+                                                                        "<b>Student Teacher Ratio:</b>", all_data$student_teacher_ratio, "<br/>",
+                                                                        "<b>Student Classroom Ratio:</b>", all_data$student_classroom_ratio, "<br/>",
+                                                                        "<b>Water Access:</b>", all_data$original_water_boolean, "<br/>",
+                                                                        "<b>Internet Access:</b>", all_data$original_internet_boolean, "<br/>",
+                                                                        "<b>Electricity Access:</b>", all_data$original_electricity_boolean, "<br/>",
+                                                                        "<b>Remoteness Index:</b>", all_data$remoteness_index, "<br/>",
+                                                                        "<b>CCT Percentage:</b>", all_data$cct_percentage, "<br/>")
             )
     })
     
@@ -51,38 +51,59 @@ shinyServer(function(input, output, session) {
 # School Profiles ---------------------------------------------------------
 
     observe({
-        time_series <- time_series[time_series$Region_Name == input$region_profile,]
-        updateSelectInput(session, "division_profile", choices = c("All Divisions" = "", sort(unique(as.character(time_series$Division_Name)))))
+        all_data <- all_data[all_data$region == input$region_profile,]
+        updateSelectInput(session, "division_profile", choices = c("All Divisions" = "", sort(unique(as.character(all_data$division)))))
     })
     
     
     observe({
         if (input$division_profile != "") {
-            time_series <- time_series[time_series$Region_Name == input$region_profile,]
-            time_series <- time_series[time_series$Division_Name == input$division_profile,]
-            updateSelectInput(session, "district_profile", choices = c("All Districts" = "",  sort(unique(as.character(time_series$District_Name)))))
+            all_data <- all_data[all_data$region == input$region_profile,]
+            all_data <- all_data[all_data$division == input$division_profile,]
+            updateSelectInput(session, "district_profile", choices = c("All Districts" = "",  sort(unique(as.character(all_data$district)))))
         }
     })
     
     observe({
         if (input$district_profile != "") {
-            time_series <- time_series[time_series$Region_Name == input$region_profile,]
-            time_series <- time_series[time_series$Division_Name == input$division_profile,]
-            time_series <- time_series[time_series$District_Name == input$district_profile,]
-            updateSelectInput(session, "school_profile", choices = c("All Schools" = "",  sort(unique(as.character(time_series$School_Name)))))
+            all_data <- all_data[all_data$region == input$region_profile,]
+            all_data <- all_data[all_data$division == input$division_profile,]
+            all_data <- all_data[all_data$district == input$district_profile,]
+            updateSelectInput(session, "school_profile", choices = c("All Schools" = "",  sort(unique(as.character(all_data$school_name)))))
         }
     })
     
     
-# Profiles: SNI Table -----------------------------------------------------
-    profile_data_react <- reactive({
-        basic <- basic[basic$Region_Name == input$region_profile,]
-        basic <- basic[basic$Division == input$division_profile,]
-        basic <- basic[basic$District == input$district_profile,]
-        basic <- basic[basic$School_Name_y == input$school_profile,]
-        basic <- basic[profile_vars]
-        basic <- basic[basic$School_Name_y == as.character(input$school_profile),]
-        basic <- setNames(basic, c(
+
+    
+# School Year 2015 - 2016 -------------------------------------------------
+    sy_1516_data_react <- reactive({
+        sy1516_data <- all_data[all_data$school_year == 2015,]
+        sy1516_data <- sy1516_data[sy1516_data$region == input$region_profile,]
+        sy1516_data <- sy1516_data[sy1516_data$division == input$division_profile,]
+        sy1516_data <- sy1516_data[sy1516_data$district == input$district_profile,]
+        sy1516_data <- sy1516_data[sy1516_data$school_name == input$school_profile,]
+    })
+    
+    
+    output$school_select_map <- renderLeaflet({
+        
+        leaflet() %>%
+            clearMarkerClusters() %>%
+            addTiles() %>%
+            addCircleMarkers(data = sy_1516_data_react())
+    })
+    
+    profile_2015_data_react <- reactive({
+        profile_2015_vars <- c('school_name', "school_id", "region",
+                               "division", "district", 'shi_score',
+                               'remoteness_index', 'cct_percentage',
+                               'student_teacher_ratio', 'student_classroom_ratio',
+                               'original_water_boolean', 'original_internet_boolean',
+                               'original_electricity_boolean')
+        profile_2015_data <- sy_1516_data_react()[profile_2015_vars]
+        
+        colnames(profile_2015_data) <- c(
             'School Name',
             "School ID",
             "Region",
@@ -96,207 +117,386 @@ shinyServer(function(input, output, session) {
             'Water Access',
             'Internet Access',
             'Electricity Access'
-        ))
-        basic <- as.data.frame(t(basic))
-        basic <- tibble::rownames_to_column(basic, "Variable")
-    })
-    
-    output$snitable_profile <- renderTable({
-        profile_data_react()
-    })
-    
-    
-    
-    
-    hist_data_react <- reactive({
-        basic <- basic[basic$Region_Name == input$region_profile,]
-        basic <- basic[basic$Division == input$division_profile,]
-        basic <- basic[basic$District == input$district_profile,]
-        basic <- basic[basic$School_Name_y == input$school_profile,]
-        basic <- basic[profile_vars]
-    })
-    
-    
-    
-# Profiles: Histogram -----------------------------------------------------
-    output$profile_hist <- renderPlot({
-        mv <- time_series[time_series$Region_Name == input$region_profile,]
-        mv <- mv[mv$Division_Name == input$division_profile,]
-        mv <- mv[mv$District_Name == input$district_profile,]
-        mv <- mv[mv$School_Name == input$school_profile,]
-        
-        if (input$profle_hist_var == 'shi_score') {
-            hist_var = basic$shi_score
-            xlim_var = c(0.001946283,1.501641408)
-            breaks_var = 50
-            mv <- mv$shi_score
-            xlabel <- "School Neediness Index"
-        }
-        else if (input$profle_hist_var == 'cct_percentage') {
-            hist_var = basic$cct_percentage
-            xlim_var = c(0,100)
-            breaks_var = 40
-            mv <- mv$cct_percentage
-            xlabel <- "Percentage of Students Recieving Conditional Cash Transfers"
-            
-        }
-        else if (input$profle_hist_var == 'remoteness_index') {
-            hist_var = basic$remoteness_index
-            xlim_var = c(-800,1000)
-            breaks_var = 160
-            mv <- mv$remoteness_index
-            xlabel <- "Remoteness Index"
-            
-        }
-        else if (input$profle_hist_var == 'Student_Teacher_Ratio') {
-            hist_var = basic$Student_Teacher_Ratio
-            xlim_var = c(0,250)
-            breaks_var = 120
-            mv <- mv$Student_Teacher_Ratio
-            xlabel <- "Student Teacher Ratio"
-            
-        }
-        else if (input$profle_hist_var == 'Student_Classroom_Ratio') {
-            hist_var = basic$Student_Classroom_Ratio
-            xlim_var = c(0,250)
-            breaks_var = 120
-            mv <- mv$Student_Classroom_Ratio
-            xlabel <- "Student Classroom Ratio"
-            
-        }
-        else if (input$profle_hist_var == 'Water_Access') {
-            hist_var = basic$Original_Water_Boolean
-            xlim_var = c(0,1)
-            breaks_var = 2
-            mv <- mv$Original_Water_Boolean
-            xlabel <- "Water Access"
-            
-        }
-        else if (input$profle_hist_var == 'Electricity_Access') {
-            hist_var = basic$Original_Electricity_Boolean
-            xlim_var = c(0,1)
-            breaks_var = 2
-            mv <- mv$Original_Electricity_Boolean
-            xlabel <- "Electricity Access"
-            
-        }
-        else if (input$profle_hist_var == 'Internet_Access') {
-            hist_var = basic$Original_Internet_Boolean
-            xlim_var = c(0,1)
-            breaks_var = 2
-            mv <- mv$Original_Internet_Boolean
-            xlabel <- "Internet Access"
-            
-        }
-        else {
-            hist_var = basic$cct_percentage
-            xlim_var = c(0,1000)
-            breaks_var = 50
-            mv <- mv$cct_percentage
-            xlabel <- "Percentage of Students Recieving Conditional Cash Transfers"
-            
-        }
-
-        hist(hist_var,
-             xlim = xlim_var,
-             breaks = breaks_var,
-             col = "#1C307E",
-             xlab = input$profle_hist_var,
-             main = xlabel#,
-             # xlab = xlabel
-            )
-        #abline(v = mv, col="red", lwd = 5)
-    })
-    
-    
-    
-# Profiles: Gender Pie Chart ----------------------------------------------
-    pie_react <- reactive({
-        if (input$school_profile != "") {
-            
-            basic <- basic[basic$Region_Name == input$region_profile,]
-            basic <- basic[basic$Division == input$division_profile,]
-            basic <- basic[basic$District == input$district_profile,]
-            basic <- basic[basic$School_Name_y == input$school_profile,]
-
-            basic <- c(basic$Total_Female, basic$Total_Male)
-        } else {
-            basic <- c(50, 50)
-        }
-        
-    })
-    
-    output$distPie <- renderPlot({
-        pie(pie_react(), labels = c("Female", "Male"), col = c('#e6a6c7', '#347dc1'))#, radius = 4)#, main, col, clockwise)
-    })
-    
-    
-# Profiles: Basic Data Chart ----------------------------------------------
-    basic_data_react <- reactive({
-        basic_vars <- c(
-            "School_Name_y",
-            "Province",
-            "Municipality",
-            "Region_Name",
-            "District",
-            "Division",
-            "Year_Established",
-            "Elementary_Classification",
-            "Night_Classes",
-            "Implermenting_Unit",
-            "Total_Enrollment_x",
-            "Total_Teachers",
-            "Total_Female",
-            "Total_Male"
         )
         
+        profile_2015_data <- as.data.frame(t(profile_2015_data))
+        profile_2015_data <- tibble::rownames_to_column(profile_2015_data, " ")
+        colnames(profile_2015_data) <- c(" ", " ")
+        return(profile_2015_data)
+    })
+    
+    output$snitable_profile_2015 <- renderTable({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1516_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
+        profile_2015_data_react()
+        
+    })
+    
 
-        basic <- basic[basic_vars]
-        basic <- basic[basic$Region_Name == input$region_profile,]
-        basic <- basic[basic$Division == input$division_profile,]
-        basic <- basic[basic$District == input$district_profile,]
-        basic <- basic[basic$School_Name == input$school_profile,]
-        basic <- setNames(basic, c("School Name",
-                                   'Province',
-                                   'Municipality',
-                                   'Region',
-                                   'District',
-                                   'Division',
-                                   'Year Established',
-                                   'Elementary Classification',
-                                   'Night Classes',
-                                   'Implermenting Unit',
-                                   'Total Enrollment',
-                                   'Total Teachers',
-                                   'Total Female',
-                                   'Total Male'))
+    pie_react_2015 <- reactive({
+        pie_2015_data <- c(sy_1516_data_react()$total_female, sy_1516_data_react()$total_male)
+        print(pie_2015_data)
+        return(pie_2015_data)
+    })
+    
+    output$distPie_2015 <- renderPlot({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1516_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
+        pie(pie_react_2015(), labels = c("Female", "Male"), col = c('#e6a6c7', '#347dc1'))#, radius = 4)#, main, col, clockwise)
+    })
+    
+    
+    basic_data_react_2015 <- reactive({
+        basic_2015_vars <- c("school_year", "school_name", "province", 
+                             "municipality", "region", "district", 
+                             "division", "total_enrollment", 
+                             "total_female", "total_male")
+        basic_2015_data <- sy_1516_data_react()[basic_2015_vars]
+        print(head(basic_2015_data))
         
+        colnames(basic_2015_data) <- c('School Year', "School Name", "Province",
+                                       "Municipality", "Region", "District", 
+                                       "Division", "Total Enrollment", 
+                                       "Total Female", "Total Male")
         
-        basic <- as.data.frame(t(basic))
-        basic <- tibble::rownames_to_column(basic, "Variable")
-        basic
+        basic_2015_data <- as.data.frame(t(basic_2015_data))
+        basic_2015_data <- tibble::rownames_to_column(basic_2015_data, " ")
+        
+        print("basic data table:")
+        
+        print(basic_2015_data)
+        
+        colnames(basic_2015_data) <- c(" ", " ")
+        return(basic_2015_data)
+    })
+    
+    output$p_table2_2015 <- renderTable({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1516_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
+        basic_data_react_2015()
+    })
+    
+    
+    output$pwdChart_2015 <- renderHighchart({
+        
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1516_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
+        shiny::validate(need(sy_1516_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
+
+        print(sy_1516_data_react())
+        pwd_2015_vars <- c("ds_total",
+                         "cp_total", "dcm_total", "drcpau_total", "dh_total",
+                         "autism_total", "wcg_total", "eb_total", "hi_total",
+                         "id_total", "li_total", "md_total", "pd_total",
+                         "shp_total", "speech_total", "vi_total", "ii_total",                           
+                         "p_total")
+
+        pwd_2015_data <- sy_1516_data_react()[pwd_2015_vars]
+        colnames(pwd_2015_data) <- c("Difficulty Seeing Manifestation",
+                                     "Cerebral Palsy",
+                                     "Difficulty Communicating Manifestation",
+                                     "Difficulty Remembering, Concentrating, Paying Attention and Understanding based on Manifestation",
+                                     "Difficulty Hearing Manifestation",
+                                     "Autism Spectral Disorder",
+                                     "Difficulty Walking, Climbing and Grasping",
+                                     "Emotional-Behavioral Disorder",
+                                     "Hearing Impairment",
+                                     "Intellectual Impairment",
+                                     "Learning Impairment",
+                                     "Multiple Disabilities",
+                                     "Orthopedic/Physical Disorder",
+                                     "Special Health Problem/Chronic Illness",
+                                     "Speech Disorder",
+                                     "Visual Impairment Disorder",
+                                     "Intellectual Impairment",
+                                     "Orthopedic/Physical Disorder")
+        pwd_2015_data <- as.data.frame(t(pwd_2015_data))
+        pwd_2015_data <- tibble::rownames_to_column(pwd_2015_data, "Disability")
+        colnames(pwd_2015_data) <- c("Disability", "Value")
+        pwd_2015_data <- pwd_2015_data[pwd_2015_data$Value > 0,]
+        hc <- pwd_2015_data %>%
+            hchart(type = "column", hcaes(x = Disability, y = Value)) %>%
+            hc_xAxis(title = list(text = "Disability")) %>%
+            hc_yAxis(title = list(text = "Value"))
+        return(hc)
         
     })
     
-    output$p_table2 <- renderTable(basic_data_react(), colnames = FALSE)
+    
+
     
     
-    output$school_select_map <- renderLeaflet({
-        basic <- basic[basic$Region_Name == input$region_profile,]
-        basic <- basic[basic$Division == input$division_profile,]
-        basic <- basic[basic$District == input$district_profile,]
-        basic <- basic[basic$School_Name == input$school_profile,]
+    
+    
+    
+
+# School Profiles 2016 - 2017 ---------------------------------------------
+    sy_1617_data_react <- reactive({
+        sy1617 <- all_data[all_data$school_year == 2016,]
+        sy1617 <- sy1617[sy1617$region == input$region_profile,]
+        sy1617 <- sy1617[sy1617$division == input$division_profile,]
+        sy1617 <- sy1617[sy1617$district == input$district_profile,]
+        sy1617 <- sy1617[sy1617$school_name == input$school_profile,]
+    })
+
+    
+    profile_2016_data_react <- reactive({
+        profile_2016_vars <- c('school_name', "school_id", "region",
+                               "division", "district", 'shi_score',
+                               'remoteness_index', 'cct_percentage',
+                               'student_teacher_ratio', 'student_classroom_ratio',
+                               'original_water_boolean', 'original_internet_boolean',
+                               'original_electricity_boolean')
+        profile_2016_data <- sy_1617_data_react()[profile_2016_vars]
         
-        leaflet(data = basic) %>%
-            clearMarkerClusters() %>%
-            # addTiles(
-            #     urlTemplate = 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
-            #     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-            # ) %>%
-            addTiles() %>%
-            # setView(lat = 12.8797, lng = 122.7740, zoom = 6) %>%
-            addCircleMarkers()
+        colnames(profile_2016_data) <- c(
+            'School Name',
+            "School ID",
+            "Region",
+            "Division",
+            "District",
+            'SNI Score',
+            'Remoteness Index',
+            'CCT Percentage',
+            'Student Teacher Ratio',
+            'Student Classroom Ratio',
+            'Water Access',
+            'Internet Access',
+            'Electricity Access'
+        )
+        
+        profile_2016_data <- as.data.frame(t(profile_2016_data))
+        profile_2016_data <- tibble::rownames_to_column(profile_2016_data, " ")
+        colnames(profile_2016_data) <- c(" ", " ")
+        return(profile_2016_data)
+    })
+    
+    output$snitable_profile_2016 <- renderTable({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1617_data_react())[1] != 0, "No data available for selected school in school year 2016 - 2017"))
+        profile_2016_data_react()
         
     })
+    
+    
+    pie_react_2016 <- reactive({
+        pie_2016_data <- c(sy_1617_data_react()$total_female, sy_1617_data_react()$total_male)
+        print(pie_2016_data)
+        return(pie_2016_data)
+    })
+    
+    output$distPie_2016 <- renderPlot({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1617_data_react())[1] != 0, "No data available for selected school in school year 2016 - 2017"))
+        pie(pie_react_2016(), labels = c("Female", "Male"), col = c('#e6a6c7', '#347dc1'))#, radius = 4)#, main, col, clockwise)
+    })
+    
+    
+    basic_2016_data <- reactive({
+        basic_2016_vars <- c("school_year", "school_name", "province", 
+                             "municipality", "region", "district", 
+                             "division", "total_enrollment", 
+                             "total_female", "total_male")
+        basic_2016_data <- sy_1617_data_react()[basic_2016_vars]
+        print(head(basic_2016_data))
+        
+        colnames(basic_2016_data) <- c('School Year', "School Name", "Province",
+                                       "Municipality", "Region", "District", 
+                                       "Division", "Total Enrollment", 
+                                       "Total Female", "Total Male")
+        
+        basic_2016_data <- as.data.frame(t(basic_2016_data))
+        basic_2016_data <- tibble::rownames_to_column(basic_2016_data, " ")
+        colnames(basic_2016_data) <- c(" ", " ")
+        return(basic_2016_data)
+    })
+    
+    output$p_table2_2016 <- renderTable({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1617_data_react())[1] != 0, "No data available for selected school in school year 2016 - 2017"))
+        basic_2016_data()
+    })
+    
+
+    
+    output$pwdChart_2016 <- renderHighchart({
+        
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1617_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
+        shiny::validate(need(sy_1617_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
+        
+        print(sy_1617_data_react())
+        pwd_2016_vars <- c("ds_total",
+                           "cp_total", "dcm_total", "drcpau_total", "dh_total",
+                           "autism_total", "wcg_total", "eb_total", "hi_total",
+                           "id_total", "li_total", "md_total", "pd_total",
+                           "shp_total", "speech_total", "vi_total", "ii_total",                           
+                           "p_total")
+        colnames(pwd_2016_vars) <- c("Difficulty Seeing Manifestation",
+                                     "Cerebral Palsy",
+                                     "Difficulty Communicating Manifestation",
+                                     "Difficulty Remembering, Concentrating, Paying Attention and Understanding based on Manifestation",
+                                     "Difficulty Hearing Manifestation",
+                                     "Autism Spectral Disorder",
+                                     "Difficulty Walking, Climbing and Grasping",
+                                     "Emotional-Behavioral Disorder",
+                                     "Hearing Impairment",
+                                     "Intellectual Impairment",
+                                     "Learning Impairment",
+                                     "Multiple Disabilities",
+                                     "Orthopedic/Physical Disorder",
+                                     "Special Health Problem/Chronic Illness",
+                                     "Speech Disorder",
+                                     "Visual Impairment Disorder",
+                                     "Intellectual Impairment",
+                                     "Orthopedic/Physical Disorder")
+        pwd_2016_data <- sy_1617_data_react()[pwd_2016_vars]
+        pwd_2016_data <- as.data.frame(t(pwd_2016_data))
+        pwd_2016_data <- tibble::rownames_to_column(pwd_2016_data, "Disability")
+        colnames(pwd_2016_data) <- c("Disability", "Value")
+        pwd_2016_data <- pwd_2016_data[pwd_2016_data$Value > 0,]
+        hc <- pwd_2016_data %>%
+            hchart(type = "column", hcaes(x = Disability, y = Value)) %>%
+            hc_xAxis(title = list(text = "Disability")) %>%
+            hc_yAxis(title = list(text = "Value"))
+        return(hc)
+        
+    })
+    
+    
+# School Profiles 2017 - 2018 ---------------------------------------------
+    sy_1718_data_react <- reactive({
+        sy1718 <- all_data[all_data$school_year == 2017,]
+        sy1718 <- sy1718[sy1718$region == input$region_profile,]
+        sy1718 <- sy1718[sy1718$division == input$division_profile,]
+        sy1718 <- sy1718[sy1718$district == input$district_profile,]
+        sy1718 <- sy1718[sy1718$school_name == input$school_profile,]
+    })
+    
+    
+    profile_2017_data_react <- reactive({
+        profile_2017_vars <- c('school_name', "school_id", "region",
+                               "division", "district", 'shi_score',
+                               'remoteness_index', 'cct_percentage',
+                               'student_teacher_ratio', 'student_classroom_ratio',
+                               'original_water_boolean', 'original_internet_boolean',
+                               'original_electricity_boolean')
+        profile_2017_data <- sy_1718_data_react()[profile_2017_vars]
+        
+        colnames(profile_2017_data) <- c(
+            'School Name',
+            "School ID",
+            "Region",
+            "Division",
+            "District",
+            'SNI Score',
+            'Remoteness Index',
+            'CCT Percentage',
+            'Student Teacher Ratio',
+            'Student Classroom Ratio',
+            'Water Access',
+            'Internet Access',
+            'Electricity Access'
+        )
+        
+        profile_2017_data <- as.data.frame(t(profile_2017_data))
+        profile_2017_data <- tibble::rownames_to_column(profile_2017_data, " ")
+        colnames(profile_2017_data) <- c(" ", " ")
+        return(profile_2017_data)
+    })
+    
+    output$snitable_profile_2017 <- renderTable({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
+        profile_2017_data_react()
+        
+    })
+    
+    
+    pie_react_2017 <- reactive({
+        pie_2017_data <- c(sy_1718_data_react()$total_female, sy_1718_data_react()$total_male)
+        print(pie_2017_data)
+        return(pie_2017_data)
+    })
+    
+    output$distPie_2017 <- renderPlot({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
+        pie(pie_react_2017(), labels = c("Female", "Male"), col = c('#e6a6c7', '#347dc1'))#, radius = 4)#, main, col, clockwise)
+    })
+    
+    
+    basic_2017_data <- reactive({
+        basic_2017_vars <- c("school_year", "school_name", "province", 
+                             "municipality", "region", "district", 
+                             "division", "total_enrollment", 
+                             "total_female", "total_male")
+        basic_2017_data <- sy_1718_data_react()[basic_2017_vars]
+        print(head(basic_2017_data))
+        
+        colnames(basic_2017_data) <- c('School Year', "School Name", "Province",
+                                       "Municipality", "Region", "District", 
+                                       "Division", "Total Enrollment", 
+                                       "Total Female", "Total Male")
+        
+        basic_2017_data <- as.data.frame(t(basic_2017_data))
+        basic_2017_data <- tibble::rownames_to_column(basic_2017_data, " ")
+        colnames(basic_2017_data) <- c(" ", " ")
+        return(basic_2017_data)
+    })
+    
+    output$p_table2_2017 <- renderTable({
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
+        basic_2017_data()
+    })
+    
+
+    
+    output$pwdChart_2017 <- renderHighchart({
+        
+        shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
+        shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
+        shiny::validate(need(sy_1718_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
+        
+        print(sy_1718_data_react())
+        pwd_2017_vars <- c("ds_total",
+                           "cp_total", "dcm_total", "drcpau_total", "dh_total",
+                           "autism_total", "wcg_total", "eb_total", "hi_total",
+                           "id_total", "li_total", "md_total", "pd_total",
+                           "shp_total", "speech_total", "vi_total", "ii_total",                           
+                           "p_total")
+        pwd_2017_data <- sy_1718_data_react()[pwd_2017_vars]
+        colnames(pwd_2017_vars) <- c("Difficulty Seeing Manifestation",
+                                     "Cerebral Palsy",
+                                     "Difficulty Communicating Manifestation",
+                                     "Difficulty Remembering, Concentrating, Paying Attention and Understanding based on Manifestation",
+                                     "Difficulty Hearing Manifestation",
+                                     "Autism Spectral Disorder",
+                                     "Difficulty Walking, Climbing and Grasping",
+                                     "Emotional-Behavioral Disorder",
+                                     "Hearing Impairment",
+                                     "Intellectual Impairment",
+                                     "Learning Impairment",
+                                     "Multiple Disabilities",
+                                     "Orthopedic/Physical Disorder",
+                                     "Special Health Problem/Chronic Illness",
+                                     "Speech Disorder",
+                                     "Visual Impairment Disorder",
+                                     "Intellectual Impairment",
+                                     "Orthopedic/Physical Disorder")
+        pwd_2017_data <- as.data.frame(t(pwd_2017_data))
+        pwd_2017_data <- tibble::rownames_to_column(pwd_2017_data, "Disability")
+        colnames(pwd_2017_data) <- c("Disability", "Value")
+        pwd_2017_data <- pwd_2017_data[pwd_2017_data$Value > 0,]
+        hc <- pwd_2017_data %>%
+            hchart(type = "column", hcaes(x = Disability, y = Value)) %>%
+            hc_xAxis(title = list(text = "Disability")) %>%
+            hc_yAxis(title = list(text = "Value"))
+        return(hc)
+        
+    })
+    
+    
     
 })
