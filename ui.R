@@ -134,6 +134,8 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                             sidebarLayout(
                                 
                                 sidebarPanel(
+                                  
+                                    selectInput('region_map', "School Region", choices = unique(all_data$region)),
                                     
                                     selectInput('year_map', "School Year", choices = c(2015, 2016, 2017), selected = 2015),
                                     
@@ -397,7 +399,106 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                             
                             )
                             
-                   )
+                   ),
+                   
+                   tabPanel(h5("Data Set Builder", style = "color: #ffffff;"),
+                            
+                            fluidRow(
+                              
+                              column(width = 4, offset = 1, style = "background-color: #DCDCDC; border-radius: 2px;",
+                                     
+                                     h3("Choose Columns"),
+                                     
+                                     checkboxGroupInput('columns', label = 'Choose Columns to include in CSV', choices = c('Remoteness Index' = 'remoteness_index', 
+                                                                                             "Total Students Recieving CCT's" = 'total_recieving_cct', 
+                                                                                             "Percentage of Students Recieving CCT's" = 'cct_percentage', 
+                                                                                             'Water Access' = 'original_water_boolean', 
+                                                                                             'Internet Access' = 'original_internet_boolean',
+                                                                                             'Electricty Access' = 'original_electricity_boolean',
+                                                                                             'Total Students' = 'total_enrollment',
+                                                                                             'Total Female Students' = 'total_female',
+                                                                                             'Total Male Students' = 'total_male',
+                                                                                             "Total Students With Difficulty Seeing Manifestation" = 'ds_total',
+                                                                                             "Total Students With Cerebral Palsy" = 'cp_total',
+                                                                                             "Total Students With Difficulty Communicating Manifestation" = 'dcm_total',
+                                                                                             "Total Students With Difficulty Remembering, Concentrating, Paying Attention and Understanding based on Manifestation" = 'drcpau_total',
+                                                                                             "Total Students With Hearing Manifestation" = 'dh_total',
+                                                                                             "Total Students With Autism Spectrum Disorder" = 'autism_total',
+                                                                                             "Total Students With Difficulty Walking, Climbing and Grasping" = 'wcg_total',
+                                                                                             "Total Students With Emotional-Behavioral Disorder" = 'eb_total',
+                                                                                             "Total Students With Hearing Impairment" = 'hi_total',
+                                                                                             "Total Students With Intellectual Impairment" = 'id_total',
+                                                                                             "Total Students With Learning Impairment" = 'li_total',
+                                                                                             "Total Students With Multiple Disabilities" = 'md_total',
+                                                                                             "Total Students With Orthopedic/Physical Disorder" = 'pd_total',
+                                                                                             "Total Students With Special Health Problem/Chronic Illness" = 'shp_total',
+                                                                                             "Total Students With Speech Disorder" = 'speech_total',
+                                                                                             "Total Students With Visual Impairment Disorder" = 'vi_total',
+                                                                                             "Total Students With Intellectual Impairment" = 'ii_total',
+                                                                                             "Total Students With Orthopedic/Physical Disorder" = 'p_total'))
+
+                                     
+                                     ),
+                              
+                              column(width = 2,
+                                
+                                h1(" ")
+                                
+                                ),
+                              
+                              column(width = 4, style = "background-color: #DCDCDC; border-radius: 2px;",
+                                     
+                                     h3("Choose Rows"),
+                                     
+                                     # checkboxInput('FilterRegions', "Filter Regions"),
+                                     # 
+                                     # checkboxInput('FilterDistricts', "Filter Regions")
+                                     
+                                     radioButtons('FilterGeo', label = 'Choose geographic breakdown to filter data',
+                                                  
+                                                  choices = c('School Region', 'School District', 'School Division', 'School Municipality', 'School Province')
+                                                  
+                                                  ),
+                                     
+                                     conditionalPanel("input.FilterGeo == 'School Region'",
+                                                      
+                                                      selectInput('QueryRegion', "Choose School Regions", choices = unique(all_data$region), multiple = TRUE)
+                                                      
+                                                      ),
+                                     
+                                     conditionalPanel("input.FilterGeo == 'School District'",
+                                                      
+                                                      selectInput('QueryDistrict', "Choose School Districts", choices = unique(all_data$district), multiple = TRUE)
+                                                      
+                                     ),
+                                     
+                                     conditionalPanel("input.FilterGeo == 'School Division'",
+                                                      
+                                                      selectInput('QueryDivision', "Choose School Divisions", choices = unique(all_data$division), multiple = TRUE)
+                                                      
+                                     ),
+                                     
+                                     conditionalPanel("input.FilterGeo == 'School Province'",
+                                                      
+                                                      selectInput('QueryProvince', "Choose School Provinces", choices = unique(all_data$province), multiple = TRUE)
+                                                      
+                                     ),
+                                     
+                                     conditionalPanel("input.FilterGeo == 'School Municipality'",
+                                                      
+                                                      selectInput('QueryMunicipality', "Choose School Municipalities", choices = unique(all_data$municipality), multiple = TRUE)
+                                                      
+                                     ),
+                                     
+                                     div(downloadButton('QueryBuilder', h4('Download CSV')), align = 'center')
+                                     
+
+                                     )
+                              
+                            )
+
+                            
+                            )
                    
         )
 

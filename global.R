@@ -13,6 +13,7 @@ library(highcharter)
 # library(rgdal)
 # library(metricsgraphics)
 # library(sf)
+library(rlist)
 
 # install.packages(c("RColorBrewer", "scales", "lattice", "dplyr", "DT", "rsconnect", "shinythemes", "rgdal", "metricsgraphics", "sf", "RSQLite"))
 

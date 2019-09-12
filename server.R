@@ -6,21 +6,44 @@ shinyServer(function(input, output, session) {
     
 # Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
-        all_data <- all_data[all_data$school_year == input$year_map,]
-        all_data <- subset(all_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        map_data <- all_data[all_data$region == input$region_map,]
+        print(dim(map_data)[1])
+        map_data <- map_data[map_data$school_year == input$year_map,]
+        print(dim(map_data)[1])
         
-        # all_data <- filter(all_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
-        all_data <- subset(all_data, student_teacher_ratio >= input$stratio_map[1] & student_teacher_ratio <= input$stratio_map[2])
-        all_data <- subset(all_data, student_classroom_ratio >= input$scratio_map[1] & student_classroom_ratio <= input$scratio_map[2])
-        all_data <- all_data[all_data$original_water_boolean %in% input$water_map,]
-        all_data <- all_data[all_data$original_internet_boolean %in% input$internet_map,]
-        all_data <- all_data[all_data$original_electricity_boolean %in% input$elec_map,]
-        all_data <- subset(all_data, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
-        all_data <- subset(all_data, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
-        all_data
+        map_data <- subset(map_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        
+        print(dim(map_data)[1])
+        
+        # map_data <- filter(map_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
+        map_data <- subset(map_data, student_teacher_ratio >= input$stratio_map[1] & student_teacher_ratio <= input$stratio_map[2])
+        print(dim(map_data)[1])
+        
+        map_data <- subset(map_data, student_classroom_ratio >= input$scratio_map[1] & student_classroom_ratio <= input$scratio_map[2])
+        print(dim(map_data)[1])
+        
+        map_data <- map_data[map_data$original_water_boolean %in% input$water_map,]
+        print(dim(map_data)[1])
+        
+        map_data <- map_data[map_data$original_internet_boolean %in% input$internet_map,]
+        print(dim(map_data)[1])
+        
+        map_data <- map_data[map_data$original_electricity_boolean %in% input$elec_map,]
+        print(dim(map_data)[1])
+        
+        map_data <- subset(map_data, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
+        print(dim(map_data)[1])
+        
+        map_data <- subset(map_data, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
+        print(dim(map_data)[1])
+        
+        map_data
     })
     
     output$map <- renderLeaflet({
+        
+        print(dim(mapdata_react())[1])
+        
         leaflet(data = mapdata_react()) %>%
             clearMarkerClusters() %>%
             addTiles(
@@ -29,16 +52,16 @@ shinyServer(function(input, output, session) {
             ) %>%
             setView(lat = 12.8797, lng = 122.7740, zoom = 6) %>%
             addMarkers(
-                clusterOptions = markerClusterOptions(), popup = ~paste("<b>School Name:</b>", all_data$school_name, "<br/>",
-                                                                        "<b>School ID:</b>", all_data$school_id, "<br/>",
-                                                                        "<b>School Neediness Score:</b>", all_data$shi_score, "<br/>",
-                                                                        "<b>Student Teacher Ratio:</b>", all_data$student_teacher_ratio, "<br/>",
-                                                                        "<b>Student Classroom Ratio:</b>", all_data$student_classroom_ratio, "<br/>",
-                                                                        "<b>Water Access:</b>", all_data$original_water_boolean, "<br/>",
-                                                                        "<b>Internet Access:</b>", all_data$original_internet_boolean, "<br/>",
-                                                                        "<b>Electricity Access:</b>", all_data$original_electricity_boolean, "<br/>",
-                                                                        "<b>Remoteness Index:</b>", all_data$remoteness_index, "<br/>",
-                                                                        "<b>CCT Percentage:</b>", all_data$cct_percentage, "<br/>")
+                clusterOptions = markerClusterOptions(), popup = ~paste("<b>School Name:</b>", mapdata_react()$school_name, "<br/>",
+                                                                        "<b>School ID:</b>", mapdata_react()$school_id, "<br/>",
+                                                                        "<b>School Neediness Score:</b>", mapdata_react()$shi_score, "<br/>",
+                                                                        "<b>Student Teacher Ratio:</b>", mapdata_react()$student_teacher_ratio, "<br/>",
+                                                                        "<b>Student Classroom Ratio:</b>", mapdata_react()$student_classroom_ratio, "<br/>",
+                                                                        "<b>Water Access:</b>", mapdata_react()$original_water_boolean, "<br/>",
+                                                                        "<b>Internet Access:</b>", mapdata_react()$original_internet_boolean, "<br/>",
+                                                                        "<b>Electricity Access:</b>", mapdata_react()$original_electricity_boolean, "<br/>",
+                                                                        "<b>Remoteness Index:</b>", mapdata_react()$remoteness_index, "<br/>",
+                                                                        "<b>CCT Percentage:</b>", mapdata_react()$cct_percentage, "<br/>")
             )
     })
     
@@ -496,6 +519,44 @@ shinyServer(function(input, output, session) {
         return(hc)
         
     })
+    
+    
+    
+    # Output: Download Country Climate CSV ------------------------------------
+    output$QueryBuilder <- downloadHandler(
+        filename = function() {
+            paste('CMSDataDownload', '.csv', sep='')
+        },
+        content = function(file) {
+            
+            basic_details <- c('school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
+            
+            keep_columns <- rlist::list.append(basic_details, input$columns)
+            
+            data_download <- all_data[keep_columns]
+            
+            print(data_download)
+            
+            #yo <- base::merge(basic_details, data_download)
+            
+            # choices = c('School Region', 'School Distrcit', 'School Division', 'School Municipality', 'School Province')
+
+            if (input$FilterGeo == 'School Region') {
+                data_download <- data_download[data_download$region %in% input$QueryRegion,]
+            } else if (input$FilterGeo == 'School District') {
+                data_download <- data_download[data_download$district %in% input$QueryDistrict,]
+            } else if (input$FilterGeo == 'School Division') {
+                data_download <- data_download[data_download$division %in% input$QueryDivision,]
+            } else if (input$FilterGeo == 'School Province') {
+                data_download <- data_download[data_download$province %in% input$QueryProvince,]
+            } else if (input$FilterGeo == 'School Municipality') {
+                data_download <- data_download[data_download$municipality %in% input$QueryMunicipality,]
+            }
+            
+            write.csv(data_download, file)
+            
+        }
+    )
     
     
     
