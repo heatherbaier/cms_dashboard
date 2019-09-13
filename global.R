@@ -59,6 +59,15 @@ all_data$original_internet_boolean[all_data$original_internet_boolean == 0] <- "
 
 
 
+# kMeans <- classInt::classIntervals(all_data$remoteness_index, 4, style = "kmeans", rtimes = 3)
+all_data$remoteness_cluster <- NA
+all_data$remoteness_cluster[all_data$remoteness_index >= -805 & all_data$remoteness_index < -400] <- 'Extremely Accessible'
+all_data$remoteness_cluster[all_data$remoteness_index >= -400 & all_data$remoteness_index < 980] <- 'Accessible'
+all_data$remoteness_cluster[all_data$remoteness_index >= 980 & all_data$remoteness_index < 5107] <- 'Remote'
+all_data$remoteness_cluster[all_data$remoteness_index >= 5107 & all_data$remoteness_index < 28419] <- 'Extremely Remote'
+
+
+
 # time_series$Latitude <-as.numeric(as.character(time_series$Latitude))
 
 # Input Variables ---------------------------------------------------------
@@ -171,4 +180,79 @@ ts_clean <- setNames(ts_clean, c(
 #basic <- basic %>% distinct(School_ID, keep_all = TRUE)
 
 # ts_shp <- sf::read_sf("./data/shp/time_series.csv.shp")
+
+
+
+
+
+
+
+
+
+## Percentile and Cluster Calculations
+all_data$remoteness_cluster <- NA
+all_data$remoteness_cluster[all_data$remoteness_index >= -805 & all_data$remoteness_index < -400] <- 'Extremely Accessible'
+all_data$remoteness_cluster[all_data$remoteness_index >= -400 & all_data$remoteness_index < 980] <- 'Accessible'
+all_data$remoteness_cluster[all_data$remoteness_index >= 980 & all_data$remoteness_index < 5107] <- 'Remote'
+all_data$remoteness_cluster[all_data$remoteness_index >= 5107 & all_data$remoteness_index < 28419] <- 'Extremely Remote'
+
+
+no_na <- all_data[all_data$shi_score != -999,]
+
+quantile(no_na$shi_score, probs = c(0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1)) # quartile
+
+all_data$remoteness_percentile_text <- NA
+all_data$remoteness_percentile_numeric <- NA
+
+all_data$remoteness_percentile_text[all_data$remoteness_index < -770.30] <- '10% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -770.30 & all_data$remoteness_index < -745.95] <- '20% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -745.95 & all_data$remoteness_index < -725.40] <- '30% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -725.40 & all_data$remoteness_index < -698.25] <- '40% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -698.25 & all_data$remoteness_index < -670.70] <- '50% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -670.70 & all_data$remoteness_index < -631.50] <- '60% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -631.50 & all_data$remoteness_index < -586.80] <- '70% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -586.80 & all_data$remoteness_index < -526.60] <- '80% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -526.60 & all_data$remoteness_index < -392.70] <- '90% Percentile'
+all_data$remoteness_percentile_text[all_data$remoteness_index >= -392.70 & all_data$remoteness_index < 28419.00] <- '100% Percentile'
+
+
+all_data$remoteness_percentile_numeric[all_data$remoteness_index < -770.30] <- .10
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -770.30 & all_data$remoteness_index < -745.95] <- .20
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -745.95 & all_data$remoteness_index < -725.40] <- .30
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -725.40 & all_data$remoteness_index < -698.25] <- .40
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -698.25 & all_data$remoteness_index < -670.70] <- .50
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -670.70 & all_data$remoteness_index < -631.50] <- .60
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -631.50 & all_data$remoteness_index < -586.80] <- .70
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -586.80 & all_data$remoteness_index < -526.60] <- .80
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -526.60 & all_data$remoteness_index < -392.70] <- .90
+all_data$remoteness_percentile_numeric[all_data$remoteness_index >= -392.70 & all_data$remoteness_index < 28419.00] <- 1
+
+
+
+all_data$sni_percentile_text <- NA
+all_data$sni_percentile_numeric <- NA
+
+all_data$sni_percentile_numeric[all_data$shi_score < 1.003583] <- .10
+all_data$sni_percentile_numeric[all_data$shi_score >= 1.003583 & all_data$shi_score < 1.067679] <- .20
+all_data$sni_percentile_numeric[all_data$shi_score >= 1.067679 & all_data$shi_score < 1.141679] <- .30
+all_data$sni_percentile_numeric[all_data$shi_score >= 1.141679 & all_data$shi_score < 1.982536] <- .40
+all_data$sni_percentile_numeric[all_data$shi_score >= 1.982536 & all_data$shi_score < 2.000917] <- .50
+all_data$sni_percentile_numeric[all_data$shi_score >= 2.000917 & all_data$shi_score < 2.066655] <- .60
+all_data$sni_percentile_numeric[all_data$shi_score >= 2.066655 & all_data$shi_score < 2.101114] <- .70
+all_data$sni_percentile_numeric[all_data$shi_score >= 2.101114 & all_data$shi_score < 2.146512] <- .80
+all_data$sni_percentile_numeric[all_data$shi_score >= 2.146512 & all_data$shi_score < 2.986154] <- .90
+all_data$sni_percentile_numeric[all_data$shi_score >= 2.986154 & all_data$shi_score < 4.940997] <- 1
+
+all_data$sni_percentile_text[all_data$shi_score < 1.003583] <- '10% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 1.003583 & all_data$shi_score < 1.067679] <- '20% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 1.067679 & all_data$shi_score < 1.141679] <- '30% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 1.141679 & all_data$shi_score < 1.982536] <- '40% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 1.982536 & all_data$shi_score < 2.000917] <- '50% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 2.000917 & all_data$shi_score < 2.066655] <- '60% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 2.066655 & all_data$shi_score < 2.101114] <- '70% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 2.101114 & all_data$shi_score < 2.146512] <- '80% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 2.146512 & all_data$shi_score < 2.986154] <- '90% Percentile'
+all_data$sni_percentile_text[all_data$shi_score >= 2.986154 & all_data$shi_score < 4.940997] <- '100% Percentile'
+
+
 

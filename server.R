@@ -106,6 +106,8 @@ shinyServer(function(input, output, session) {
         sy1516_data <- sy1516_data[sy1516_data$division == input$division_profile,]
         sy1516_data <- sy1516_data[sy1516_data$district == input$district_profile,]
         sy1516_data <- sy1516_data[sy1516_data$school_name == input$school_profile,]
+        print(colnames(sy1516_data))
+        return(sy1516_data)
     })
     
     
@@ -119,8 +121,8 @@ shinyServer(function(input, output, session) {
     
     profile_2015_data_react <- reactive({
         profile_2015_vars <- c('school_name', "school_id", "region",
-                               "division", "district", 'shi_score',
-                               'remoteness_index', 'cct_percentage',
+                               "division", "district", 'shi_score', 'sni_percentile_text',
+                               'remoteness_index', 'remoteness_cluster', 'remoteness_percentile_cluster', 'cct_percentage',
                                'student_teacher_ratio', 'student_classroom_ratio',
                                'original_water_boolean', 'original_internet_boolean',
                                'original_electricity_boolean')
@@ -133,7 +135,10 @@ shinyServer(function(input, output, session) {
             "Division",
             "District",
             'SNI Score',
+            'SNI Percentile',
             'Remoteness Index',
+            'Remoteness Cluster',
+            'Remoteness Percentile',
             'CCT Percentage',
             'Student Teacher Ratio',
             'Student Classroom Ratio',
@@ -260,16 +265,19 @@ shinyServer(function(input, output, session) {
         sy1617 <- sy1617[sy1617$division == input$division_profile,]
         sy1617 <- sy1617[sy1617$district == input$district_profile,]
         sy1617 <- sy1617[sy1617$school_name == input$school_profile,]
+        colnames(sy1617)
     })
 
     
     profile_2016_data_react <- reactive({
+        
         profile_2016_vars <- c('school_name', "school_id", "region",
-                               "division", "district", 'shi_score',
-                               'remoteness_index', 'cct_percentage',
+                               "division", "district", 'shi_score', 'sni_percentile_text',
+                               'remoteness_index', 'remoteness_cluster', 'remoteness_percentile_text', 'cct_percentage',
                                'student_teacher_ratio', 'student_classroom_ratio',
                                'original_water_boolean', 'original_internet_boolean',
                                'original_electricity_boolean')
+        
         profile_2016_data <- sy_1617_data_react()[profile_2016_vars]
         
         colnames(profile_2016_data) <- c(
@@ -279,7 +287,10 @@ shinyServer(function(input, output, session) {
             "Division",
             "District",
             'SNI Score',
+            'SNI Percentile',
             'Remoteness Index',
+            'Remoteness Cluster',
+            'Remoteness Percentile',
             'CCT Percentage',
             'Student Teacher Ratio',
             'Student Classroom Ratio',
@@ -394,13 +405,14 @@ shinyServer(function(input, output, session) {
         sy1718 <- sy1718[sy1718$division == input$division_profile,]
         sy1718 <- sy1718[sy1718$district == input$district_profile,]
         sy1718 <- sy1718[sy1718$school_name == input$school_profile,]
+        print(sy1718)
     })
     
     
     profile_2017_data_react <- reactive({
         profile_2017_vars <- c('school_name', "school_id", "region",
-                               "division", "district", 'shi_score',
-                               'remoteness_index', 'cct_percentage',
+                               "division", "district", 'shi_score', 'sni_percentile_text',
+                               'remoteness_index', 'remoteness_cluster', 'remoteness_percentile_text', 'cct_percentage',
                                'student_teacher_ratio', 'student_classroom_ratio',
                                'original_water_boolean', 'original_internet_boolean',
                                'original_electricity_boolean')
@@ -413,7 +425,10 @@ shinyServer(function(input, output, session) {
             "Division",
             "District",
             'SNI Score',
+            'SNI Percentile',
             'Remoteness Index',
+            'Remoteness Cluster',
+            'Remoteness Percentile',
             'CCT Percentage',
             'Student Teacher Ratio',
             'Student Classroom Ratio',
@@ -429,6 +444,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$snitable_profile_2017 <- renderTable({
+        print(dim(sy_1718_data_react())[1])
         shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
         shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
         profile_2017_data_react()
@@ -569,6 +585,7 @@ shinyServer(function(input, output, session) {
     
     # Output: Download Country Climate CSV ------------------------------------
     output$QueryBuilder <- downloadHandler(
+        
         filename = function() {
             
             paste('CMSDataDownload', '.csv', sep='')
@@ -576,45 +593,11 @@ shinyServer(function(input, output, session) {
         },
         
         content = function(file) {
-            
-            # basic_details <- c('school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
-            # 
-            # keep_columns <- rlist::list.append(basic_details, input$columns)
-            # 
-            # if ('pwds' %in% input$columns) {
-            #     
-            #     keep_columns <- rlist::list.append(basic_details, c("ds_total",
-            #                                                         "cp_total", "dcm_total", "drcpau_total", "dh_total",
-            #                                                         "autism_total", "wcg_total", "eb_total", "hi_total",
-            #                                                         "id_total", "li_total", "md_total", "pd_total",
-            #                                                         "shp_total", "speech_total", "vi_total", "ii_total",                           
-            #                                                         "p_total", 'pwd_total'))
-            # }
-            # 
-            # if ('total_enrollment' %in% input$columns) {
-            #     
-            #     keep_columns <- rlist::list.append(basic_details, c('total_enrollment', 'total_female', 'total_male'))
-            # }
-            # 
-            # data_download <- all_data[keep_columns]
-            # 
-            # print(data_download)
-            # 
-            # if (input$FilterGeo == 'School Region') {
-            #     data_download <- data_download[data_download$region %in% input$QueryRegion,]
-            # } else if (input$FilterGeo == 'School District') {
-            #     data_download <- data_download[data_download$district %in% input$QueryDistrict,]
-            # } else if (input$FilterGeo == 'School Division') {
-            #     data_download <- data_download[data_download$division %in% input$QueryDivision,]
-            # } else if (input$FilterGeo == 'School Province') {
-            #     data_download <- data_download[data_download$province %in% input$QueryProvince,]
-            # } else if (input$FilterGeo == 'School Municipality') {
-            #     data_download <- data_download[data_download$municipality %in% input$QueryMunicipality,]
-            # }
-            
+
             write.csv(QueryDataReact(), file)
             
         }
+        
     )
     
     
