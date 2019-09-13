@@ -410,32 +410,13 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                                      h3("Choose Columns"),
                                      
                                      checkboxGroupInput('columns', label = 'Choose Columns to include in CSV', choices = c('Remoteness Index' = 'remoteness_index', 
-                                                                                             "Total Students Recieving CCT's" = 'total_recieving_cct', 
+                                                                                             "Total Number of Learners Receiving CCT's" = 'total_recieving_cct', 
                                                                                              "Percentage of Students Recieving CCT's" = 'cct_percentage', 
                                                                                              'Water Access' = 'original_water_boolean', 
                                                                                              'Internet Access' = 'original_internet_boolean',
                                                                                              'Electricty Access' = 'original_electricity_boolean',
-                                                                                             'Total Students' = 'total_enrollment',
-                                                                                             'Total Female Students' = 'total_female',
-                                                                                             'Total Male Students' = 'total_male',
-                                                                                             "Total Students With Difficulty Seeing Manifestation" = 'ds_total',
-                                                                                             "Total Students With Cerebral Palsy" = 'cp_total',
-                                                                                             "Total Students With Difficulty Communicating Manifestation" = 'dcm_total',
-                                                                                             "Total Students With Difficulty Remembering, Concentrating, Paying Attention and Understanding based on Manifestation" = 'drcpau_total',
-                                                                                             "Total Students With Hearing Manifestation" = 'dh_total',
-                                                                                             "Total Students With Autism Spectrum Disorder" = 'autism_total',
-                                                                                             "Total Students With Difficulty Walking, Climbing and Grasping" = 'wcg_total',
-                                                                                             "Total Students With Emotional-Behavioral Disorder" = 'eb_total',
-                                                                                             "Total Students With Hearing Impairment" = 'hi_total',
-                                                                                             "Total Students With Intellectual Impairment" = 'id_total',
-                                                                                             "Total Students With Learning Impairment" = 'li_total',
-                                                                                             "Total Students With Multiple Disabilities" = 'md_total',
-                                                                                             "Total Students With Orthopedic/Physical Disorder" = 'pd_total',
-                                                                                             "Total Students With Special Health Problem/Chronic Illness" = 'shp_total',
-                                                                                             "Total Students With Speech Disorder" = 'speech_total',
-                                                                                             "Total Students With Visual Impairment Disorder" = 'vi_total',
-                                                                                             "Total Students With Intellectual Impairment" = 'ii_total',
-                                                                                             "Total Students With Orthopedic/Physical Disorder" = 'p_total'))
+                                                                                             'Total Number of Learners with Gender Distribution' = 'total_enrollment',
+                                                                                             "Total Number of Learners With Disability" = 'pwds'))
 
                                      
                                      ),
@@ -449,14 +430,10 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                               column(width = 4, style = "background-color: #DCDCDC; border-radius: 2px;",
                                      
                                      h3("Choose Rows"),
-                                     
-                                     # checkboxInput('FilterRegions', "Filter Regions"),
-                                     # 
-                                     # checkboxInput('FilterDistricts', "Filter Regions")
-                                     
+
                                      radioButtons('FilterGeo', label = 'Choose geographic breakdown to filter data',
                                                   
-                                                  choices = c('School Region', 'School District', 'School Division', 'School Municipality', 'School Province')
+                                                  choices = c('School Region', 'School Province', 'School Division', 'School District', 'School Municipality')
                                                   
                                                   ),
                                      
@@ -466,9 +443,9 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                                                       
                                                       ),
                                      
-                                     conditionalPanel("input.FilterGeo == 'School District'",
+                                     conditionalPanel("input.FilterGeo == 'School Province'",
                                                       
-                                                      selectInput('QueryDistrict', "Choose School Districts", choices = unique(all_data$district), multiple = TRUE)
+                                                      selectInput('QueryProvince', "Choose School Provinces", choices = unique(all_data$province), multiple = TRUE)
                                                       
                                      ),
                                      
@@ -478,9 +455,9 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                                                       
                                      ),
                                      
-                                     conditionalPanel("input.FilterGeo == 'School Province'",
+                                     conditionalPanel("input.FilterGeo == 'School District'",
                                                       
-                                                      selectInput('QueryProvince', "Choose School Provinces", choices = unique(all_data$province), multiple = TRUE)
+                                                      selectInput('QueryDistrict', "Choose School Districts", choices = unique(all_data$district), multiple = TRUE)
                                                       
                                      ),
                                      
@@ -491,14 +468,20 @@ shinyUI(navbarPage(h5("CheckMySchool Data Portal", style = "color: #ffffff;"), t
                                      ),
                                      
                                      div(downloadButton('QueryBuilder', h4('Download CSV')), align = 'center')
-                                     
 
                                      )
                               
-                            )
-
+                            ),
                             
-                            )
+                          hr(),
+                            
+                          div(tags$u(h3("Data Set Preview")), align = 'center'),
+                          
+                          h1(" "),
+                            
+                          DT::dataTableOutput("QueryTablePreview")
+
+                  )
                    
         )
 

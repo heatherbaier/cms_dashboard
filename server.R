@@ -521,39 +521,98 @@ shinyServer(function(input, output, session) {
     })
     
     
+    QueryDataReact <- reactive({
+        
+        basic_details <- c('school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
+        
+        keep_columns <- rlist::list.append(basic_details, input$columns)
+        
+        if ('pwds' %in% input$columns) {
+            
+            keep_columns <- rlist::list.append(basic_details, c("ds_total",
+                                                                "cp_total", "dcm_total", "drcpau_total", "dh_total",
+                                                                "autism_total", "wcg_total", "eb_total", "hi_total",
+                                                                "id_total", "li_total", "md_total", "pd_total",
+                                                                "shp_total", "speech_total", "vi_total", "ii_total",                           
+                                                                "p_total", 'pwd_total'))
+        }
+        
+        if ('total_enrollment' %in% input$columns) {
+            
+            keep_columns <- rlist::list.append(basic_details, c('total_enrollment', 'total_female', 'total_male'))
+        }
+        
+        data_download <- all_data[keep_columns]
+        
+        print(data_download)
+        
+        if (input$FilterGeo == 'School Region') {
+            data_download <- data_download[data_download$region %in% input$QueryRegion,]
+        } else if (input$FilterGeo == 'School District') {
+            data_download <- data_download[data_download$district %in% input$QueryDistrict,]
+        } else if (input$FilterGeo == 'School Division') {
+            data_download <- data_download[data_download$division %in% input$QueryDivision,]
+        } else if (input$FilterGeo == 'School Province') {
+            data_download <- data_download[data_download$province %in% input$QueryProvince,]
+        } else if (input$FilterGeo == 'School Municipality') {
+            data_download <- data_download[data_download$municipality %in% input$QueryMunicipality,]
+        }
+        
+        return(data_download)
+        
+    })
+    
+    output$QueryTablePreview <- DT::renderDataTable(DT::datatable(data = QueryDataReact(), options = list(autoWidth = FALSE)))
+    
+    
+    
     
     # Output: Download Country Climate CSV ------------------------------------
     output$QueryBuilder <- downloadHandler(
         filename = function() {
+            
             paste('CMSDataDownload', '.csv', sep='')
+            
         },
+        
         content = function(file) {
             
-            basic_details <- c('school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
+            # basic_details <- c('school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
+            # 
+            # keep_columns <- rlist::list.append(basic_details, input$columns)
+            # 
+            # if ('pwds' %in% input$columns) {
+            #     
+            #     keep_columns <- rlist::list.append(basic_details, c("ds_total",
+            #                                                         "cp_total", "dcm_total", "drcpau_total", "dh_total",
+            #                                                         "autism_total", "wcg_total", "eb_total", "hi_total",
+            #                                                         "id_total", "li_total", "md_total", "pd_total",
+            #                                                         "shp_total", "speech_total", "vi_total", "ii_total",                           
+            #                                                         "p_total", 'pwd_total'))
+            # }
+            # 
+            # if ('total_enrollment' %in% input$columns) {
+            #     
+            #     keep_columns <- rlist::list.append(basic_details, c('total_enrollment', 'total_female', 'total_male'))
+            # }
+            # 
+            # data_download <- all_data[keep_columns]
+            # 
+            # print(data_download)
+            # 
+            # if (input$FilterGeo == 'School Region') {
+            #     data_download <- data_download[data_download$region %in% input$QueryRegion,]
+            # } else if (input$FilterGeo == 'School District') {
+            #     data_download <- data_download[data_download$district %in% input$QueryDistrict,]
+            # } else if (input$FilterGeo == 'School Division') {
+            #     data_download <- data_download[data_download$division %in% input$QueryDivision,]
+            # } else if (input$FilterGeo == 'School Province') {
+            #     data_download <- data_download[data_download$province %in% input$QueryProvince,]
+            # } else if (input$FilterGeo == 'School Municipality') {
+            #     data_download <- data_download[data_download$municipality %in% input$QueryMunicipality,]
+            # }
             
-            keep_columns <- rlist::list.append(basic_details, input$columns)
-            
-            data_download <- all_data[keep_columns]
-            
-            print(data_download)
-            
-            #yo <- base::merge(basic_details, data_download)
-            
-            # choices = c('School Region', 'School Distrcit', 'School Division', 'School Municipality', 'School Province')
-
-            if (input$FilterGeo == 'School Region') {
-                data_download <- data_download[data_download$region %in% input$QueryRegion,]
-            } else if (input$FilterGeo == 'School District') {
-                data_download <- data_download[data_download$district %in% input$QueryDistrict,]
-            } else if (input$FilterGeo == 'School Division') {
-                data_download <- data_download[data_download$division %in% input$QueryDivision,]
-            } else if (input$FilterGeo == 'School Province') {
-                data_download <- data_download[data_download$province %in% input$QueryProvince,]
-            } else if (input$FilterGeo == 'School Municipality') {
-                data_download <- data_download[data_download$municipality %in% input$QueryMunicipality,]
-            }
-            
-            write.csv(data_download, file)
+            write.csv(QueryDataReact(), file)
             
         }
     )
