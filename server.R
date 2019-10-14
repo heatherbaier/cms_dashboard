@@ -1,10 +1,10 @@
 shinyServer(function(input, output, session) {
     
     
-# SNI Methodology Table ---------------------------------------------------
+    # SNI Methodology Table ---------------------------------------------------
     output$variables_table <- renderTable(methodology, colnames = TRUE, striped = TRUE, hover = TRUE, align = "c")
     
-# Time Series Map ---------------------------------------------------------
+    # Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
         map_data <- all_data[all_data$region == input$region_map,]
         print(dim(map_data)[1])
@@ -67,12 +67,12 @@ shinyServer(function(input, output, session) {
     
     
     
-# Time Series Data Table --------------------------------------------------
+    # Time Series Data Table --------------------------------------------------
     output$timeseries_table <- DT::renderDataTable(DT::datatable(data = ts_clean, options = list(autoWidth = FALSE), filter = "top"))
     
     
-# School Profiles ---------------------------------------------------------
-
+    # School Profiles ---------------------------------------------------------
+    
     observe({
         all_data <- all_data[all_data$region == input$region_profile,]
         updateSelectInput(session, "division_profile", choices = c("All Divisions" = "", sort(unique(as.character(all_data$division)))))
@@ -97,9 +97,9 @@ shinyServer(function(input, output, session) {
     })
     
     
-
     
-# School Year 2015 - 2016 -------------------------------------------------
+    
+    # School Year 2015 - 2016 -------------------------------------------------
     sy_1516_data_react <- reactive({
         sy1516_data <- all_data[all_data$school_year == 2015,]
         sy1516_data <- sy1516_data[sy1516_data$region == input$region_profile,]
@@ -122,7 +122,7 @@ shinyServer(function(input, output, session) {
     profile_2015_data_react <- reactive({
         profile_2015_vars <- c('school_name', "school_id", "region",
                                "division", "district", 'shi_score', 'sni_percentile_text',
-                               'remoteness_index', 'remoteness_cluster', 'remoteness_percentile_cluster', 'cct_percentage',
+                               'remoteness_index', 'remoteness_cluster', 'remoteness_percentile_text', 'cct_percentage',
                                'student_teacher_ratio', 'student_classroom_ratio',
                                'original_water_boolean', 'original_internet_boolean',
                                'original_electricity_boolean')
@@ -160,7 +160,7 @@ shinyServer(function(input, output, session) {
         
     })
     
-
+    
     pie_react_2015 <- reactive({
         pie_2015_data <- c(sy_1516_data_react()$total_female, sy_1516_data_react()$total_male)
         print(pie_2015_data)
@@ -210,15 +210,15 @@ shinyServer(function(input, output, session) {
         shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
         shiny::validate(need(dim(sy_1516_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
         shiny::validate(need(sy_1516_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
-
+        
         print(sy_1516_data_react())
         pwd_2015_vars <- c("ds_total",
-                         "cp_total", "dcm_total", "drcpau_total", "dh_total",
-                         "autism_total", "wcg_total", "eb_total", "hi_total",
-                         "id_total", "li_total", "md_total", "pd_total",
-                         "shp_total", "speech_total", "vi_total", "ii_total",                           
-                         "p_total")
-
+                           "cp_total", "dcm_total", "drcpau_total", "dh_total",
+                           "autism_total", "wcg_total", "eb_total", "hi_total",
+                           "id_total", "li_total", "md_total", "pd_total",
+                           "shp_total", "speech_total", "vi_total", "ii_total",                           
+                           "p_total")
+        
         pwd_2015_data <- sy_1516_data_react()[pwd_2015_vars]
         colnames(pwd_2015_data) <- c("Difficulty Seeing Manifestation",
                                      "Cerebral Palsy",
@@ -251,14 +251,14 @@ shinyServer(function(input, output, session) {
     })
     
     
-
     
     
     
     
     
-
-# School Profiles 2016 - 2017 ---------------------------------------------
+    
+    
+    # School Profiles 2016 - 2017 ---------------------------------------------
     sy_1617_data_react <- reactive({
         sy1617 <- all_data[all_data$school_year == 2016,]
         sy1617 <- sy1617[sy1617$region == input$region_profile,]
@@ -267,7 +267,7 @@ shinyServer(function(input, output, session) {
         sy1617 <- sy1617[sy1617$school_name == input$school_profile,]
         colnames(sy1617)
     })
-
+    
     
     profile_2016_data_react <- reactive({
         
@@ -351,7 +351,7 @@ shinyServer(function(input, output, session) {
         basic_2016_data()
     })
     
-
+    
     
     output$pwdChart_2016 <- renderHighchart({
         
@@ -398,7 +398,7 @@ shinyServer(function(input, output, session) {
     })
     
     
-# School Profiles 2017 - 2018 ---------------------------------------------
+    # School Profiles 2017 - 2018 ---------------------------------------------
     sy_1718_data_react <- reactive({
         sy1718 <- all_data[all_data$school_year == 2017,]
         sy1718 <- sy1718[sy1718$region == input$region_profile,]
@@ -490,7 +490,7 @@ shinyServer(function(input, output, session) {
         basic_2017_data()
     })
     
-
+    
     
     output$pwdChart_2017 <- renderHighchart({
         
@@ -593,7 +593,7 @@ shinyServer(function(input, output, session) {
         },
         
         content = function(file) {
-
+            
             write.csv(QueryDataReact(), file)
             
         }
