@@ -7,42 +7,42 @@ shinyServer(function(input, output, session) {
     # Time Series Map ---------------------------------------------------------
     mapdata_react <- reactive({
         map_data <- all_data[all_data$region == input$region_map,]
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         map_data <- map_data[map_data$school_year == input$year_map,]
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- subset(map_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
         
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         # map_data <- filter(map_data, shi_score >= input$shi_score_map[1] & shi_score <= input$shi_score_map[2])
         map_data <- subset(map_data, student_teacher_ratio >= input$stratio_map[1] & student_teacher_ratio <= input$stratio_map[2])
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- subset(map_data, student_classroom_ratio >= input$scratio_map[1] & student_classroom_ratio <= input$scratio_map[2])
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- map_data[map_data$original_water_boolean %in% input$water_map,]
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- map_data[map_data$original_internet_boolean %in% input$internet_map,]
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- map_data[map_data$original_electricity_boolean %in% input$elec_map,]
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- subset(map_data, remoteness_index >= input$ri_map[1] & remoteness_index <= input$ri_map[2])
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data <- subset(map_data, cct_percentage >= input$cct_map[1] & cct_percentage <= input$cct_map[2])
-        print(dim(map_data)[1])
+        # print(dim(map_data)[1])
         
         map_data
     })
     
     output$map <- renderLeaflet({
         
-        print(dim(mapdata_react())[1])
+        # print(dim(mapdata_react())[1])
         
         leaflet(data = mapdata_react()) %>%
             clearMarkerClusters() %>%
@@ -106,7 +106,7 @@ shinyServer(function(input, output, session) {
         sy1516_data <- sy1516_data[sy1516_data$division == input$division_profile,]
         sy1516_data <- sy1516_data[sy1516_data$district == input$district_profile,]
         sy1516_data <- sy1516_data[sy1516_data$school_name == input$school_profile,]
-        print(colnames(sy1516_data))
+        # print(colnames(sy1516_data))
         return(sy1516_data)
     })
     
@@ -163,7 +163,7 @@ shinyServer(function(input, output, session) {
     
     pie_react_2015 <- reactive({
         pie_2015_data <- c(sy_1516_data_react()$total_female, sy_1516_data_react()$total_male)
-        print(pie_2015_data)
+        # print(pie_2015_data)
         return(pie_2015_data)
     })
     
@@ -180,7 +180,7 @@ shinyServer(function(input, output, session) {
                              "division", "total_enrollment", 
                              "total_female", "total_male")
         basic_2015_data <- sy_1516_data_react()[basic_2015_vars]
-        print(head(basic_2015_data))
+        # print(head(basic_2015_data))
         
         colnames(basic_2015_data) <- c('School Year', "School Name", "Province",
                                        "Municipality", "Region", "District", 
@@ -190,9 +190,9 @@ shinyServer(function(input, output, session) {
         basic_2015_data <- as.data.frame(t(basic_2015_data))
         basic_2015_data <- tibble::rownames_to_column(basic_2015_data, " ")
         
-        print("basic data table:")
+        # print("basic data table:")
         
-        print(basic_2015_data)
+        # print(basic_2015_data)
         
         colnames(basic_2015_data) <- c(" ", " ")
         return(basic_2015_data)
@@ -211,7 +211,7 @@ shinyServer(function(input, output, session) {
         shiny::validate(need(dim(sy_1516_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
         shiny::validate(need(sy_1516_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
         
-        print(sy_1516_data_react())
+        # print(sy_1516_data_react())
         pwd_2015_vars <- c("ds_total",
                            "cp_total", "dcm_total", "drcpau_total", "dh_total",
                            "autism_total", "wcg_total", "eb_total", "hi_total",
@@ -315,7 +315,7 @@ shinyServer(function(input, output, session) {
     
     pie_react_2016 <- reactive({
         pie_2016_data <- c(sy_1617_data_react()$total_female, sy_1617_data_react()$total_male)
-        print(pie_2016_data)
+        # print(pie_2016_data)
         return(pie_2016_data)
     })
     
@@ -332,7 +332,7 @@ shinyServer(function(input, output, session) {
                              "division", "total_enrollment", 
                              "total_female", "total_male")
         basic_2016_data <- sy_1617_data_react()[basic_2016_vars]
-        print(head(basic_2016_data))
+        # print(head(basic_2016_data))
         
         colnames(basic_2016_data) <- c('School Year', "School Name", "Province",
                                        "Municipality", "Region", "District", 
@@ -359,7 +359,7 @@ shinyServer(function(input, output, session) {
         shiny::validate(need(dim(sy_1617_data_react())[1] != 0, "No data available for selected school in school year 2015 - 2016"))
         shiny::validate(need(sy_1617_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
         
-        print(sy_1617_data_react())
+        # print(sy_1617_data_react())
         pwd_2016_vars <- c("ds_total",
                            "cp_total", "dcm_total", "drcpau_total", "dh_total",
                            "autism_total", "wcg_total", "eb_total", "hi_total",
@@ -405,7 +405,7 @@ shinyServer(function(input, output, session) {
         sy1718 <- sy1718[sy1718$division == input$division_profile,]
         sy1718 <- sy1718[sy1718$district == input$district_profile,]
         sy1718 <- sy1718[sy1718$school_name == input$school_profile,]
-        print(sy1718)
+        # print(sy1718)
     })
     
     
@@ -444,7 +444,7 @@ shinyServer(function(input, output, session) {
     })
     
     output$snitable_profile_2017 <- renderTable({
-        print(dim(sy_1718_data_react())[1])
+        # print(dim(sy_1718_data_react())[1])
         shiny::validate(need(input$school_profile != "", "Please choose a school for details."))
         shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
         profile_2017_data_react()
@@ -454,7 +454,7 @@ shinyServer(function(input, output, session) {
     
     pie_react_2017 <- reactive({
         pie_2017_data <- c(sy_1718_data_react()$total_female, sy_1718_data_react()$total_male)
-        print(pie_2017_data)
+        # print(pie_2017_data)
         return(pie_2017_data)
     })
     
@@ -471,7 +471,7 @@ shinyServer(function(input, output, session) {
                              "division", "total_enrollment", 
                              "total_female", "total_male")
         basic_2017_data <- sy_1718_data_react()[basic_2017_vars]
-        print(head(basic_2017_data))
+        # print(head(basic_2017_data))
         
         colnames(basic_2017_data) <- c('School Year', "School Name", "Province",
                                        "Municipality", "Region", "District", 
@@ -498,7 +498,7 @@ shinyServer(function(input, output, session) {
         shiny::validate(need(dim(sy_1718_data_react())[1] != 0, "No data available for selected school in school year 2017 - 2018"))
         shiny::validate(need(sy_1718_data_react()$pwd_total != 0, "No students with disabilites at selected school"))
         
-        print(sy_1718_data_react())
+        # print(sy_1718_data_react())
         pwd_2017_vars <- c("ds_total",
                            "cp_total", "dcm_total", "drcpau_total", "dh_total",
                            "autism_total", "wcg_total", "eb_total", "hi_total",
@@ -539,7 +539,7 @@ shinyServer(function(input, output, session) {
     
     QueryDataReact <- reactive({
         
-        basic_details <- c('school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
+        basic_details <- c('school_year', 'school_id', 'school_name', 'region', 'district', 'division', 'province', 'municipality','latitude', 'longitude')
         
         keep_columns <- rlist::list.append(basic_details, input$columns)
         
@@ -560,7 +560,7 @@ shinyServer(function(input, output, session) {
         
         data_download <- all_data[keep_columns]
         
-        print(data_download)
+        # print(data_download)
         
         if (input$FilterGeo == 'School Region') {
             data_download <- data_download[data_download$region %in% input$QueryRegion,]
